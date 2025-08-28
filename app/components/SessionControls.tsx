@@ -73,10 +73,10 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
       
       <div className="grid grid-cols-1 gap-4">
         {/* Session Status */}
-        <div className="p-4 glass rounded-xl border border-stone-600/30 backdrop-blur-sm">
+        <div className="p-4 glass rounded-xl border border-stone-600/30 backdrop-blur-sm bg-stone-800/40">
           <h4 className="font-medium text-stone-200 mb-3 text-center text-sm tracking-wide">Estado de la Sesión</h4>
           <div className="space-y-2">
-            <div className="flex justify-between items-center py-2 px-3 bg-stone-800/40 rounded-lg border border-stone-700/30">
+            <div className="flex justify-between items-center py-2 px-3 bg-stone-700/40 rounded-lg border border-stone-600/30">
               <span className="text-stone-400 text-xs">Estado:</span>
               <span className={`font-medium text-xs ${
                 sessionState.isActive ? 'text-green-400 drop-shadow-glowGreen' : 'text-stone-400'
@@ -85,7 +85,7 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
               </span>
             </div>
             {sessionState.currentPhase && (
-              <div className="flex justify-between items-center py-2 px-3 bg-stone-800/40 rounded-lg border border-stone-700/30">
+              <div className="flex justify-between items-center py-2 px-3 bg-stone-700/40 rounded-lg border border-stone-600/30">
                 <span className="text-stone-400 text-xs">Fase:</span>
                 <span className="text-yellow-400 font-medium text-xs">
                   {getPhaseInfo()}
@@ -93,7 +93,7 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
               </div>
             )}
             {sessionState.isActive && (
-              <div className="flex justify-between items-center py-2 px-3 bg-stone-800/40 rounded-lg border border-stone-700/30">
+              <div className="flex justify-between items-center py-2 px-3 bg-stone-700/40 rounded-lg border border-stone-600/30">
                 <span className="text-stone-400 text-xs">Duración:</span>
                 <span className="text-stone-200 font-medium text-xs">
                   {formatTime(sessionState.totalDuration)}
@@ -104,7 +104,7 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
         </div>
 
         {/* Session Controls */}
-        <div className="p-4 glass rounded-xl border border-stone-600/30 backdrop-blur-sm">
+        <div className="p-4 glass rounded-xl border border-stone-600/30 backdrop-blur-sm bg-stone-800/40">
           <h4 className="font-medium text-stone-200 mb-3 text-center text-sm tracking-wide">Acciones</h4>
           
           {/* Info sobre guardado automático */}
@@ -136,7 +136,7 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
             ) : (
               <>
                 {/* Microphone Control - Integrated in actions */}
-                <div className="flex flex-col items-center gap-2 p-3 glass rounded-lg">
+                <div className="flex flex-col items-center gap-2 p-3 glass rounded-lg bg-stone-700/30 relative z-10">
                   <span className="text-xs text-stone-400 font-medium">Control de Micrófono</span>
                   <AgentControls />
                 </div>
@@ -172,7 +172,7 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
 
         {/* Session Progress */}
         {sessionState.isActive && (
-          <div className="p-4 glass rounded-xl border border-stone-600/30 backdrop-blur-sm">
+          <div className="p-4 glass rounded-xl border border-stone-600/30 backdrop-blur-sm bg-stone-800/40">
             <h4 className="font-medium text-stone-200 mb-2 text-center text-sm tracking-wide">Progreso de la Sesión</h4>
             <div className="flex items-center gap-3">
               <div className="flex-1 bg-stone-700/50 rounded-full h-2 border border-stone-600/30">

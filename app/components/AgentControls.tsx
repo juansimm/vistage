@@ -11,9 +11,10 @@ export const AgentControls = () => {
   } = useWebSocketContext();
 
   const microphoneToggle = useCallback(
-    async (e: Event) => {
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      console.log("toogle the control");
+      e.stopPropagation();
+      console.log("toggle the control");
       if (!microphoneOpen) {
         startStreaming();
       } else {
@@ -33,14 +34,14 @@ export const AgentControls = () => {
         <div className="relative group">
           <Tooltip showArrow content={microphoneOpen ? "Desactivar micrófono" : "Activar micrófono"}>
             <button
-              onClick={(e: any) => microphoneToggle(e)}
-              className={`relative w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 ease-out transform hover:scale-110 hover:-translate-y-1 ${
+              onClick={microphoneToggle}
+              className={`microphone-button relative w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 ease-out transform hover:scale-110 hover:-translate-y-1 cursor-pointer ${
                 microphoneOpen
                   ? "mic-inactive animate-pulse"
                   : "mic-active animate-float"
               } border border-stone-600/30`}
             >
-              <div className="relative z-10 bg-stone-900/60 backdrop-blur-sm w-16 h-16 rounded-full flex items-center justify-center border border-stone-700/40">
+              <div className="relative z-10 bg-stone-800/80 backdrop-blur-sm w-16 h-16 rounded-full flex items-center justify-center border border-stone-700/40">
                 <MicrophoneIcon
                   micOpen={microphoneOpen}
                   className={`h-7 w-7 transition-all duration-300 ${

@@ -23,8 +23,8 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
 
   if (!currentPhase) {
     return (
-      <div className="p-4 bg-gray-800/50 rounded-xl border border-gray-600">
-        <p className="text-gray-400 text-center text-sm">
+      <div className="p-4 bg-stone-800/50 rounded-xl border border-stone-600">
+        <p className="text-stone-400 text-center text-sm">
           Selecciona una fase para ver el prompt de coaching
         </p>
       </div>
@@ -38,7 +38,7 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
       <h3 className="text-lg font-semibold text-white mb-3 text-center">
         Prompt de Coaching - {currentPhase.charAt(0).toUpperCase() + currentPhase.slice(1)}
       </h3>
-      <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-600 max-h-32 overflow-y-auto">
+      <div className="p-3 bg-stone-800/50 rounded-lg border border-stone-600 max-h-32 overflow-y-auto">
         <p className="text-white text-xs leading-relaxed whitespace-pre-wrap">
           {defaultPrompt}
         </p>

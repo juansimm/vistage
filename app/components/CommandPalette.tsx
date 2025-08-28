@@ -81,9 +81,9 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       />
       
       {/* Palette */}
-      <div className="relative w-full max-w-2xl mx-4 bg-gray-900 border border-gray-600 rounded-lg shadow-2xl">
+      <div className="relative w-full max-w-2xl mx-4 bg-stone-900 border border-stone-600 rounded-lg shadow-2xl">
         {/* Header */}
-        <div className="p-4 border-b border-gray-600">
+        <div className="p-4 border-b border-stone-600">
           <div className="flex items-center gap-3">
             <span className="text-lg">⚡</span>
             <input
@@ -91,10 +91,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
               placeholder="Buscar conversaciones o comandos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 bg-transparent text-white placeholder-gray-400 focus:outline-none"
+              className="flex-1 bg-transparent text-white placeholder-stone-400 focus:outline-none"
               autoFocus
             />
-            <kbd className="px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded">
+            <kbd className="px-2 py-1 text-xs bg-stone-700 text-stone-300 rounded">
               ESC
             </kbd>
           </div>
@@ -103,7 +103,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         {/* Results */}
         <div className="max-h-96 overflow-y-auto">
           {filteredConversations.length === 0 ? (
-            <div className="p-4 text-center text-gray-400">
+            <div className="p-4 text-center text-stone-400">
               {searchTerm ? "No se encontraron conversaciones" : "Escribe para buscar conversaciones"}
             </div>
           ) : (
@@ -115,8 +115,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     onInjectContext(conversation);
                     onClose();
                   }}
-                  className={`w-full px-4 py-3 text-left hover:bg-gray-800 transition-colors ${
-                    index === selectedIndex ? "bg-gray-800" : ""
+                  className={`w-full px-4 py-3 text-left hover:bg-stone-800 transition-colors ${
+                    index === selectedIndex ? "bg-stone-800" : ""
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -124,7 +124,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       <div className="text-white font-medium">
                         {conversation.id}
                       </div>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-stone-400">
                         {conversation.phase} • {new Date(conversation.endedAt).toLocaleDateString()}
                       </div>
                     </div>
@@ -136,7 +136,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                       }`}>
                         {conversation.mode === "live" ? "Live" : "User Only"}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-stone-500">
                         Inyectar
                       </span>
                     </div>
@@ -148,7 +148,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-gray-600 text-xs text-gray-400">
+        <div className="p-3 border-t border-stone-600 text-xs text-stone-400">
           <div className="flex items-center justify-between">
             <span>↑↓ para navegar • Enter para seleccionar</span>
             <span>Cmd+K para abrir</span>

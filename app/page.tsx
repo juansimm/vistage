@@ -11,7 +11,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-gradient-stone">
+    <div className="h-screen w-screen overflow-hidden bg-stone-900">
       {/* height 4rem */}
       <div className="glass border-b border-stone-700/30 h-[4rem] flex items-center">
         <header className="mx-auto w-full px-4 md:px-6 lg:px-8 flex items-center justify-center pt-4 md:pt-0 gap-2">

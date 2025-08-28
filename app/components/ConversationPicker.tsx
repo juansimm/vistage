@@ -145,10 +145,10 @@ export const ConversationPicker: React.FC<ConversationPickerProps> = ({ classNam
                 <button
                   key={mode}
                   onClick={() => setModeFilter(mode)}
-                  className={`px-3 py-1 text-xs rounded-full transition-colors ${
+                  className={`px-3 py-1 text-xs rounded-lg transition-colors ${
                     modeFilter === mode
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                      ? "bg-yellow-600 text-white"
+                      : "bg-stone-700 text-stone-300 hover:bg-stone-600"
                   }`}
                 >
                   {mode === "all" ? "Todas" : mode === "live" ? "Live" : "User Only"}
@@ -160,20 +160,20 @@ export const ConversationPicker: React.FC<ConversationPickerProps> = ({ classNam
           {/* Lista de conversaciones */}
           <div className="max-h-64 overflow-y-auto">
             {loading ? (
-              <div className="p-4 text-center text-gray-400">
-                <div className="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+              <div className="p-4 text-center text-stone-400">
+                <div className="animate-spin w-6 h-6 border-2 border-yellow-500 border-t-transparent rounded-full mx-auto mb-2"></div>
                 Cargando conversaciones...
               </div>
             ) : filteredConversations.length === 0 ? (
-              <div className="p-4 text-center text-gray-400">
+              <div className="p-4 text-center text-stone-400">
                 No hay conversaciones guardadas
               </div>
             ) : (
               filteredConversations.map((conversation) => (
                 <div
                   key={conversation.id}
-                  className={`p-3 border-b border-gray-700 hover:bg-gray-800 cursor-pointer transition-colors ${
-                    selectedConversation?.id === conversation.id ? "bg-gray-800" : ""
+                  className={`p-3 border-b border-stone-700 hover:bg-stone-800 cursor-pointer transition-colors ${
+                    selectedConversation?.id === conversation.id ? "bg-stone-800" : ""
                   }`}
                   onClick={() => loadPreview(conversation)}
                 >
@@ -187,14 +187,14 @@ export const ConversationPicker: React.FC<ConversationPickerProps> = ({ classNam
                         }`}>
                           {conversation.mode === "live" ? "Live" : "User Only"}
                         </span>
-                        <span className="text-xs text-gray-400 capitalize">
+                        <span className="text-xs text-stone-400 capitalize">
                           {conversation.phase}
                         </span>
                       </div>
                       <div className="text-sm text-white font-medium mb-1">
                         {conversation.id}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-stone-400">
                         {formatDate(conversation.endedAt)} • {formatDuration(conversation.durationSec)}
                       </div>
                     </div>
@@ -206,18 +206,18 @@ export const ConversationPicker: React.FC<ConversationPickerProps> = ({ classNam
 
           {/* Preview y acciones */}
           {selectedConversation && previewMessages.length > 0 && (
-            <div className="p-4 border-t border-gray-600 bg-gray-800/50">
+            <div className="p-4 border-t border-stone-600 bg-stone-800/50">
               <div className="mb-3">
                 <h4 className="text-sm font-medium text-white mb-2">Preview (últimos 3 mensajes):</h4>
                 <div className="space-y-2 max-h-32 overflow-y-auto">
                   {previewMessages.map((msg, index) => (
                     <div key={index} className="text-xs">
                       <span className={`inline-block px-2 py-1 rounded text-xs mr-2 ${
-                        msg.role === "user" ? "bg-blue-900/30 text-blue-400" : "bg-purple-900/30 text-purple-400"
+                        msg.role === "user" ? "bg-yellow-900/30 text-yellow-400" : "bg-green-900/30 text-green-400"
                       }`}>
                         {msg.role === "user" ? "U" : "IA"}
                       </span>
-                      <span className="text-gray-300">
+                      <span className="text-stone-300">
                         {msg.text.substring(0, 80)}{msg.text.length > 80 ? "..." : ""}
                       </span>
                     </div>
@@ -229,7 +229,7 @@ export const ConversationPicker: React.FC<ConversationPickerProps> = ({ classNam
                 <button
                   onClick={handleInjectContext}
                   disabled={injecting}
-                  className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white text-sm rounded-lg transition-colors"
+                  className="flex-1 px-3 py-2 bg-yellow-600 hover:bg-yellow-700 disabled:bg-stone-600 text-white text-sm rounded-lg transition-colors"
                 >
                   {injecting ? "Inyectando..." : "Inyectar como contexto"}
                 </button>
@@ -238,7 +238,7 @@ export const ConversationPicker: React.FC<ConversationPickerProps> = ({ classNam
                     setSelectedConversation(null);
                     setPreviewMessages([]);
                   }}
-                  className="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm rounded-lg transition-colors"
+                  className="px-3 py-2 bg-stone-600 hover:bg-stone-700 text-white text-sm rounded-lg transition-colors"
                 >
                   Ver completa
                 </button>

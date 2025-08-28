@@ -227,7 +227,7 @@ export const KnowledgeBase: React.FC = () => {
       {/* Upload Area */}
       <div className="mb-6">
         <div 
-          className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 transition-colors cursor-pointer"
+          className="border-2 border-dashed border-stone-600 rounded-lg p-6 text-center hover:border-yellow-500 transition-colors cursor-pointer"
           onClick={() => fileInputRef.current?.click()}
           onDrop={(e) => {
             e.preventDefault();
@@ -248,17 +248,17 @@ export const KnowledgeBase: React.FC = () => {
           <h4 className="text-white font-medium mb-2">
             Subir Materiales de Sesión
           </h4>
-          <p className="text-gray-400 text-sm mb-3">
+          <p className="text-stone-400 text-sm mb-3">
             Arrastra archivos aquí o haz clic para seleccionar
           </p>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs text-stone-500">
             <p>Formatos soportados: PDF, PPT, PPTX, WAV, MP3</p>
             <p>Tamaño máximo: 50MB por archivo</p>
           </div>
           
           {isUploading && (
-            <div className="mt-3 text-blue-400 text-sm">
-              <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-1"></div>
+            <div className="mt-3 text-yellow-400 text-sm">
+              <div className="animate-spin w-4 h-4 border-2 border-yellow-500 border-t-transparent rounded-full mx-auto mb-1"></div>
               Subiendo archivos...
             </div>
           )}
@@ -275,7 +275,7 @@ export const KnowledgeBase: React.FC = () => {
             {uploadedFiles.map((file) => (
               <div
                 key={file.id}
-                className="flex items-center gap-3 p-3 bg-gray-800/50 rounded-lg border border-gray-600 hover:bg-gray-700/50 transition-colors"
+                className="flex items-center gap-3 p-3 bg-stone-800/50 rounded-lg border border-stone-600 hover:bg-stone-700/50 transition-colors"
               >
                 <span className="text-2xl flex-shrink-0">
                   {getFileIcon(file.type)}
@@ -285,7 +285,7 @@ export const KnowledgeBase: React.FC = () => {
                   <h5 className="text-white font-medium text-sm truncate">
                     {file.name}
                   </h5>
-                  <p className="text-gray-400 text-xs">
+                  <p className="text-stone-400 text-xs">
                     {formatFileSize(file.size)} • {new Date(file.uploadDate).toLocaleDateString()}
                   </p>
                 </div>
@@ -325,10 +325,10 @@ export const KnowledgeBase: React.FC = () => {
                         disabled={file.isProcessing}
                         className={`p-1 text-xs rounded transition-colors ${
                           file.isProcessing
-                            ? 'text-gray-500 cursor-not-allowed'
+                            ? 'text-stone-500 cursor-not-allowed'
                             : file.transcript
                               ? 'text-green-400 hover:text-green-300 hover:bg-green-900/30'
-                              : 'text-blue-400 hover:text-blue-300 hover:bg-blue-900/30'
+                              : 'text-yellow-400 hover:text-yellow-300 hover:bg-yellow-900/30'
                         }`}
                         title={file.isProcessing ? 'Procesando...' : file.transcript ? 'Reprocesar con STT' : 'Procesar con STT'}
                       >
@@ -352,26 +352,26 @@ export const KnowledgeBase: React.FC = () => {
       )}
 
       {/* Knowledge Base Stats */}
-      <div className="mt-6 p-4 bg-gray-800/30 rounded-lg border border-gray-600">
+      <div className="mt-6 p-4 bg-stone-800/30 rounded-lg border border-stone-600">
         <h4 className="text-white font-medium mb-2 text-sm">📊 Estadísticas</h4>
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div className="text-center">
-            <div className="text-blue-400 font-bold text-lg">{uploadedFiles.length}</div>
-            <div className="text-gray-400">Archivos</div>
+            <div className="text-yellow-400 font-bold text-lg">{uploadedFiles.length}</div>
+            <div className="text-stone-400">Archivos</div>
           </div>
           <div className="text-center">
             <div className="text-green-400 font-bold text-lg">
               {formatFileSize(uploadedFiles.reduce((acc, file) => acc + file.size, 0))}
             </div>
-            <div className="text-gray-400">Tamaño Total</div>
+            <div className="text-stone-400">Tamaño Total</div>
           </div>
         </div>
       </div>
 
       {/* Instructions */}
-      <div className="mt-4 p-3 bg-blue-900/20 rounded-lg border border-blue-500/30">
-        <h4 className="text-blue-400 font-medium text-sm mb-2">💡 Instrucciones</h4>
-        <ul className="text-xs text-blue-300 space-y-1">
+      <div className="mt-4 p-3 bg-yellow-900/20 rounded-lg border border-yellow-500/30">
+        <h4 className="text-yellow-400 font-medium text-sm mb-2">💡 Instrucciones</h4>
+        <ul className="text-xs text-yellow-300 space-y-1">
           <li>• Los archivos PDF/PPT servirán como contexto para Vivi</li>
           <li>• Los archivos WAV se pueden reproducir como referencia</li>
           <li>• Los materiales se procesarán antes de la sesión</li>

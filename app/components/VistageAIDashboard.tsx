@@ -243,7 +243,7 @@ export const VistageAIDashboard: React.FC = () => {
 
   // Layout principal con sidebar siempre visible
   const MainLayout = ({ children }: { children: React.ReactNode }) => (
-    <div className="h-full bg-gray-900 text-white flex overflow-hidden">
+    <div className="h-full bg-stone-900 text-white flex overflow-hidden">
       {/* Sidebar */}
       <Sidebar
         currentPhase={currentPhase}
@@ -276,33 +276,33 @@ export const VistageAIDashboard: React.FC = () => {
   if (!sessionState.isActive) {
     return (
       <MainLayout>
-        <div className="flex-1 flex items-center justify-center px-6 py-4">
+        <div className="flex-1 flex items-center justify-center px-6 py-4 bg-stone-900">
           <div className="max-w-3xl w-full text-center">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent mb-4">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent mb-4">
               Vistage AI Voice Session
             </h1>
-            <p className="text-gray-300 text-xl mb-12">
+            <p className="text-stone-300 text-xl mb-12">
               Tu asistente de coaching ejecutivo inteligente está listo
             </p>
 
             {/* Quick Start */}
-            <div className="border border-gray-600 rounded-lg p-6 mb-8">
+            <div className="border border-stone-700 rounded-lg p-6 mb-8 bg-stone-800/50 backdrop-blur-sm">
               <h2 className="text-2xl font-semibold text-white mb-6">Inicio Rápido</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex flex-col items-center gap-3 p-4 border border-gray-700 rounded-lg">
+                <div className="flex flex-col items-center gap-3 p-4 border border-stone-700 rounded-lg bg-stone-800/30 backdrop-blur-sm">
                   <span className="text-3xl">1️⃣</span>
                   <h3 className="text-white font-medium">Selecciona una Fase</h3>
-                  <p className="text-gray-400 text-sm text-center">Elige la fase de coaching en el sidebar</p>
+                  <p className="text-stone-400 text-sm text-center">Elige la fase de coaching en el sidebar</p>
                 </div>
-                <div className="flex flex-col items-center gap-3 p-4 border border-gray-700 rounded-lg">
+                <div className="flex flex-col items-center gap-3 p-4 border border-stone-700 rounded-lg bg-stone-800/30 backdrop-blur-sm">
                   <span className="text-3xl">2️⃣</span>
                   <h3 className="text-white font-medium">Inicia la Sesión</h3>
-                  <p className="text-gray-400 text-sm text-center">Presiona "Iniciar Sesión" en el panel de control</p>
+                  <p className="text-stone-400 text-sm text-center">Presiona "Iniciar Sesión" en el panel de control</p>
                 </div>
-                <div className="flex flex-col items-center gap-3 p-4 border border-gray-700 rounded-lg">
+                <div className="flex flex-col items-center gap-3 p-4 border border-stone-700 rounded-lg bg-stone-800/30 backdrop-blur-sm">
                   <span className="text-3xl">3️⃣</span>
                   <h3 className="text-white font-medium">Activa el Micrófono</h3>
-                  <p className="text-gray-400 text-sm text-center">Haz clic en el botón del micrófono para empezar</p>
+                  <p className="text-stone-400 text-sm text-center">Haz clic en el botón del micrófono para empezar</p>
                 </div>
               </div>
             </div>
@@ -311,8 +311,8 @@ export const VistageAIDashboard: React.FC = () => {
             <div className="flex justify-center gap-6">
               <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
                 connection 
-                  ? 'text-green-400 border-green-600' 
-                  : 'text-red-400 border-red-600'
+                  ? 'text-green-400 border-green-600 bg-green-500/10' 
+                  : 'text-red-400 border-red-600 bg-red-500/10'
               }`}>
                 <div className={`w-2 h-2 rounded-full ${
                   connection ? 'bg-green-500 animate-pulse' : 'bg-red-500'
@@ -322,7 +322,7 @@ export const VistageAIDashboard: React.FC = () => {
                 </span>
               </div>
               
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg text-blue-400 border border-blue-600">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg text-yellow-400 border border-yellow-600 bg-yellow-500/10">
                 <span className="text-sm font-medium">Fase: {currentPhase ? COACHING_PHASES.find(p => p.id === currentPhase)?.name : 'No seleccionada'}</span>
               </div>
             </div>
@@ -336,13 +336,13 @@ export const VistageAIDashboard: React.FC = () => {
   return (
     <MainLayout>
       {/* Header compacto */}
-      <div className="border-b border-gray-700 px-6 py-3 flex items-center justify-between">
+      <div className="border-b border-stone-700 px-6 py-3 flex items-center justify-between bg-stone-800/50 backdrop-blur-sm">
         <div>
-          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+          <h1 className="text-lg font-bold bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
             Sesión de Coaching Activa
           </h1>
           {currentPhase && (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-stone-400">
               Fase: {COACHING_PHASES.find(p => p.id === currentPhase)?.name}
             </p>
           )}
@@ -350,7 +350,7 @@ export const VistageAIDashboard: React.FC = () => {
         
         <div className="flex items-center gap-4">
           {/* Duración */}
-          <div className="flex items-center gap-2 px-3 py-1 border border-purple-600 rounded text-purple-400">
+          <div className="flex items-center gap-2 px-3 py-1 border border-yellow-600 rounded text-yellow-400 bg-yellow-500/10">
             <span className="text-sm">⏱️</span>
             <span className="font-mono font-semibold text-sm">
               {Math.floor(sessionState.totalDuration / 60)}:{(sessionState.totalDuration % 60).toString().padStart(2, '0')}
@@ -358,7 +358,7 @@ export const VistageAIDashboard: React.FC = () => {
           </div>
           
           {/* Status */}
-          <div className="flex items-center gap-2 px-3 py-1 border border-green-600 rounded text-green-400">
+          <div className="flex items-center gap-2 px-3 py-1 border border-green-600 rounded text-green-400 bg-green-500/10">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium">En Vivo</span>
           </div>
@@ -366,8 +366,8 @@ export const VistageAIDashboard: React.FC = () => {
       </div>
 
       {/* Main Content Area - Full width chat */}
-      <div className="flex-1 p-4">
-        <div className="h-full border border-gray-700 rounded-lg">
+      <div className="flex-1 p-4 bg-stone-900">
+        <div className="h-full border border-stone-700 rounded-lg bg-stone-800/30 backdrop-blur-sm">
           <LiveTranscription
             messages={chatMessages}
             currentSpeaker={currentSpeaker}

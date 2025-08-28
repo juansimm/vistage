@@ -74,12 +74,14 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    const timer = setTimeout(() => {
-      scrollToBottom();
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, [messages.length]);
+    if (!isUserScrolling) {
+      const timer = setTimeout(() => {
+        scrollToBottom();
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [messages.length, isUserScrolling]);
 
   // Handle streaming text updates
   useEffect(() => {
@@ -107,8 +109,10 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
               }));
               currentIndex++;
               
-              // Scroll as text appears
-              scrollToBottom();
+              // Only scroll if user is not manually scrolling
+              if (!isUserScrolling) {
+                scrollToBottom();
+              }
             } else {
               clearInterval(streamInterval);
               // Remove from streaming after animation completes
@@ -124,7 +128,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
         }
       }
     }
-  }, [messages, currentSpeaker]);
+  }, [messages, currentSpeaker, isUserScrolling]);
 
   // Cleanup streaming on unmount
   useEffect(() => {
@@ -212,7 +216,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
                   {phaseInfo.duration} min
                 </div>
               </div>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-stone-400 mt-1">
                 {phaseInfo.objective}
               </p>
             </div>
@@ -227,7 +231,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
         onScroll={handleScroll}
         style={{ 
           scrollbarWidth: 'thin',
-          scrollbarColor: '#4B5563 #1F2937'
+          scrollbarColor: '#57534e #1c1917'
         }}
       >
         {/* Scroll to bottom button */}
@@ -238,7 +242,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
                 setIsUserScrolling(false);
                 scrollToBottom(true);
               }}
-              className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+              className="p-3 bg-yellow-500 hover:bg-yellow-600 text-stone-900 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
               title="Ir al final de la conversación"
             >
               ⬇️
@@ -246,23 +250,41 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
           </div>
         )}
         {messages.length === 0 ? (
-          <div className="text-center text-gray-400 py-8">
+          <div className="text-center text-stone-400 py-8">
             <div className="text-2xl mb-3">💬</div>
             <p className="text-base mb-2">La conversación aparecerá aquí...</p>
-            <p className="text-xs text-gray-500">Estado: {isSessionActive ? 'Sesión activa' : 'Sesión inactiva'}</p>
-            <p className="text-xs text-gray-500 mt-1">Mensajes recibidos: {messages.length}</p>
+            <p className="text-xs text-stone-500">Estado: {isSessionActive ? 'Sesión activa' : 'Sesión inactiva'}</p>
+            <p className="text-xs text-stone-500 mt-1">Mensajes recibidos: {messages.length}</p>
+            <p className="text-xs text-stone-500 mt-1">Micrófono: {microphoneOpen ? 'Activo' : 'Inactivo'}</p>
+            <p className="text-xs text-stone-500 mt-1">Speaker actual: {currentSpeaker || 'Ninguno'}</p>
+            {/* Test button for debugging */}
+            <button
+              onClick={() => {
+                const testMessage = {
+                  content: "Mensaje de prueba " + new Date().toLocaleTimeString(),
+                  role: "user",
+                  id: Date.now().toString(),
+                  timestamp: new Date().toISOString()
+                };
+                console.log("Adding test message:", testMessage);
+                // This will help us see if the message rendering works
+              }}
+              className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+            >
+              Agregar Mensaje de Prueba
+            </button>
             {/* Test message for debugging */}
-            <div className="mt-4 p-3 border-l-4 border-blue-500 rounded-lg border border-gray-600">
+            <div className="mt-4 p-3 border-l-4 border-yellow-500 rounded-lg border border-stone-600">
               <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium bg-blue-600 text-white">
+                <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium bg-yellow-500 text-stone-900">
                   T
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-medium text-blue-400">
+                    <span className="text-sm font-medium text-yellow-400">
                       Test
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-stone-500">
                       {new Date().toLocaleTimeString()}
                     </span>
                   </div>
@@ -280,26 +302,26 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
                 key={index}
                 className={`p-3 rounded-lg border ${
                   message.role === "user"
-                    ? "border-gray-600 border-l-4 border-l-blue-500"
-                    : "border-gray-600 border-l-4 border-l-purple-500"
+                    ? "border-stone-600 border-l-4 border-l-yellow-500"
+                    : "border-stone-600 border-l-4 border-l-green-500"
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium ${
                     message.role === "user"
-                      ? "bg-blue-600 text-white"
-                      : "bg-purple-600 text-white"
+                      ? "bg-yellow-500 text-stone-900"
+                      : "bg-green-500 text-white"
                   }`}>
                     {message.role === "user" ? "U" : "IA"}
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-sm font-medium ${
-                        message.role === "user" ? "text-blue-400" : "text-purple-400"
+                        message.role === "user" ? "text-yellow-400" : "text-green-400"
                       }`}>
                         {message.role === "user" ? "Usuario" : "Vistage AI"}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-stone-500">
                         {new Date().toLocaleTimeString()}
                       </span>
                     </div>
@@ -307,7 +329,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
                       {message.role === 'assistant' && streamingMessages[message.id.toString()] !== undefined ? (
                         <>
                           <span>{streamingMessages[message.id.toString()]}</span>
-                          <span className="animate-pulse text-blue-400">|</span>
+                          <span className="animate-pulse text-yellow-400">|</span>
                         </>
                       ) : (
                         <span>{message.content}</span>
@@ -324,13 +346,13 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
 
       {/* Footer fijo - no scrolleable */}
       {isSessionActive && microphoneOpen && (
-        <div className="flex-shrink-0 p-4 border-t border-gray-600 bg-gray-800/50">
+        <div className="flex-shrink-0 p-4 border-t border-stone-600 bg-stone-800/50">
           <div className="flex items-center justify-center py-2">
-            <div className="flex items-center gap-3 text-green-400 text-sm px-4 py-2 rounded-lg border border-green-500">
+            <div className="flex items-center gap-3 text-green-400 text-sm px-4 py-2 rounded-lg border border-green-500 bg-green-500/10">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               Transcribiendo en vivo
             </div>
-            <div className="text-gray-400 text-xs ml-4">
+            <div className="text-stone-400 text-xs ml-4">
               Latencia: ~200ms
             </div>
           </div>

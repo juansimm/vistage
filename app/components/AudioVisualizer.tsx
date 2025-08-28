@@ -64,11 +64,11 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
           const y = (canvas.height - barHeight) / 2;
 
           // Color based on current speaker
-          let color = "#3B82F6"; // Default blue
+          let color = "#EAB308"; // Default yellow
           if (currentSpeaker === "user") {
-            color = "#10B981"; // Green for user
+            color = "#EAB308"; // Yellow for user
           } else if (currentSpeaker === "model") {
-            color = "#8B5CF6"; // Purple for AI
+            color = "#22C55E"; // Green for AI
           }
 
           // Create gradient effect
@@ -107,8 +107,8 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
 
   if (!isActive || !microphoneOpen) {
     return (
-      <div className="h-20 bg-gray-800/30 rounded-lg border border-gray-600 flex items-center justify-center">
-        <p className="text-gray-400 text-sm">
+      <div className="h-20 bg-stone-800/30 rounded-lg border border-stone-600 flex items-center justify-center">
+        <p className="text-stone-400 text-sm">
           {!isActive ? "Sesión no iniciada" : "Micrófono desactivado"}
         </p>
       </div>
@@ -125,19 +125,19 @@ export const AudioVisualizer: React.FC<AudioVisualizerProps> = ({
           ref={canvasRef}
           width={400}
           height={60}
-          className="w-full h-16 bg-gray-900 rounded-lg border border-gray-600"
+          className="w-full h-16 bg-stone-900 rounded-lg border border-stone-600"
         />
         <div className="absolute top-2 right-2 flex items-center gap-2">
           {currentSpeaker === "user" && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-green-900/50 rounded border border-green-500">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-xs text-green-400 font-medium">Usuario</span>
+            <div className="flex items-center gap-1 px-2 py-1 bg-yellow-900/50 rounded border border-yellow-500">
+              <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-yellow-400 font-medium">Usuario</span>
             </div>
           )}
           {currentSpeaker === "model" && (
-            <div className="flex items-center gap-1 px-2 py-1 bg-purple-900/50 rounded border border-purple-500">
-              <div className="w-1.5 h-1.5 bg-purple-500 rounded-full animate-pulse"></div>
-              <span className="text-xs text-purple-400 font-medium">IA</span>
+            <div className="flex items-center gap-1 px-2 py-1 bg-green-900/50 rounded border border-green-500">
+              <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-xs text-green-400 font-medium">IA</span>
             </div>
           )}
         </div>

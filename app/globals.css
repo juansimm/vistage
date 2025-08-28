@@ -58,9 +58,9 @@ body {
 
 @layer utilities {
   .glass {
-    background: rgba(41, 37, 36, 0.4);
-    border: 1px solid rgba(120, 113, 108, 0.2);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    background: rgba(41, 37, 36, 0.6);
+    border: 1px solid rgba(120, 113, 108, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
   }
@@ -73,25 +73,58 @@ body {
 
   .modern-button {
     background: linear-gradient(135deg, var(--yellow-500) 0%, var(--yellow-600) 100%);
-    border: 1px solid rgba(234, 179, 8, 0.3);
-    box-shadow: 0 4px 16px rgba(234, 179, 8, 0.2);
+    border: 1px solid rgba(234, 179, 8, 0.4);
+    box-shadow: 0 4px 16px rgba(234, 179, 8, 0.25);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .modern-button:hover {
     background: linear-gradient(135deg, var(--yellow-400) 0%, var(--yellow-500) 100%);
-    box-shadow: 0 6px 24px rgba(234, 179, 8, 0.3);
+    box-shadow: 0 6px 24px rgba(234, 179, 8, 0.35);
     transform: translateY(-2px);
   }
 
   .mic-active {
     background: linear-gradient(135deg, var(--green-500) 0%, var(--green-600) 100%);
-    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.3), 0 0 24px rgba(34, 197, 94, 0.2);
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.4), 0 0 24px rgba(34, 197, 94, 0.25);
   }
 
   .mic-inactive {
     background: linear-gradient(135deg, var(--red-500) 0%, var(--red-600) 100%);
-    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3), 0 0 24px rgba(239, 68, 68, 0.2);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4), 0 0 24px rgba(239, 68, 68, 0.25);
+  }
+
+  /* Ensure microphone button is clickable */
+  .microphone-button {
+    position: relative;
+    z-index: 10;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+
+  .microphone-button:hover {
+    transform: scale(1.05);
+  }
+
+  .microphone-button:active {
+    transform: scale(0.95);
+  }
+
+  /* Animation for microphone button */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
 }
 

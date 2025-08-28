@@ -83,11 +83,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               onEndSession={onEndSession}
               currentPhase={currentPhase}
             />
-            {sessionState.isActive && (
-              <div className="border-t border-stone-600/30 pt-6">
-                <AgentControls />
-              </div>
-            )}
+            {/* Removed duplicate AgentControls - it's already in SessionControls */}
           </div>
         );
       case 'phases':
@@ -117,10 +113,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   if (isCollapsed) {
     return (
-      <div className="w-16 border-r border-stone-700/30 bg-stone-900/40 backdrop-blur-sm flex flex-col items-center py-4 space-y-4">
+      <div className="w-16 border-r border-stone-700/30 bg-stone-800/80 backdrop-blur-sm flex flex-col items-center py-4 space-y-4">
         <button
           onClick={onToggleCollapse}
-          className="p-2 text-stone-400 hover:text-yellow-400 hover:bg-stone-800/50 rounded-lg transition-all duration-300 transform hover:scale-110"
+          className="p-2 text-stone-400 hover:text-yellow-400 hover:bg-stone-700/50 rounded-lg transition-all duration-300 transform hover:scale-110"
         >
           ▶️
         </button>
@@ -131,7 +127,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className={`p-2 rounded-lg transition-all duration-300 text-xl transform hover:scale-110 ${
               activeTab === tab.id
                 ? 'modern-button text-stone-900 font-bold'
-                : 'text-stone-400 hover:text-yellow-400 hover:bg-stone-800/50'
+                : 'text-stone-400 hover:text-yellow-400 hover:bg-stone-700/50'
             }`}
             title={tab.name}
           >
@@ -143,20 +139,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }
 
   return (
-    <div className="w-80 border-r border-stone-700/30 bg-stone-900/20 backdrop-blur-md flex flex-col h-full">
+    <div className="w-80 border-r border-stone-700/30 bg-stone-800/60 backdrop-blur-md flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-stone-700/30 flex items-center justify-between glass">
         <h2 className="text-lg font-bold text-yellow-400 drop-shadow-glowYellow tracking-wide">Panel de Control</h2>
         <button
           onClick={onToggleCollapse}
-          className="p-1 text-stone-400 hover:text-yellow-400 hover:bg-stone-800/50 rounded transition-all duration-300 transform hover:scale-110"
+          className="p-1 text-stone-400 hover:text-yellow-400 hover:bg-stone-700/50 rounded transition-all duration-300 transform hover:scale-110"
         >
           ◀️
         </button>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex flex-wrap border-b border-stone-700/30 bg-stone-900/10">
+      <div className="flex flex-wrap border-b border-stone-700/30 bg-stone-800/30">
         {sidebarTabs.map((tab) => (
           <button
             key={tab.id}
@@ -164,7 +160,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className={`flex-1 min-w-0 px-3 py-3 text-xs font-medium transition-all duration-300 border-b-2 hover:transform hover:-translate-y-0.5 ${
               activeTab === tab.id
                 ? 'border-yellow-500 bg-yellow-500/10 text-yellow-400 backdrop-blur-sm'
-                : 'border-transparent text-stone-400 hover:text-yellow-400 hover:bg-stone-800/30'
+                : 'border-transparent text-stone-400 hover:text-yellow-400 hover:bg-stone-700/40'
             }`}
           >
             <div className="flex flex-col items-center gap-1">
@@ -176,7 +172,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 bg-stone-800/20">
         {renderTabContent()}
       </div>
 

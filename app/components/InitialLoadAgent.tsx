@@ -18,10 +18,10 @@ export const InitialLoadAgent = ({
           type="button"
           className="relative block w-full glass p-6 sm:p-8 lg:p-12 rounded-xl"
         >
-          <h2 className="font-favorit mt-2 block font-bold text-xl text-gray-100">
+          <h2 className="font-favorit mt-2 block font-bold text-xl text-stone-100">
             Vistage AI - Coaching Ejecutivo
           </h2>
-          <span className="mt-2 block text-sm text-gray-100/70">
+          <span className="mt-2 block text-sm text-stone-100/70">
             <Headphones /> Para una mejor experiencia, recomendamos usar auriculares
             mientras usas esta aplicación. Pueden aparecer pequeños errores durante el uso de este demo.
           </span>

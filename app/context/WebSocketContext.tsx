@@ -15,12 +15,13 @@ import { useAuth } from "./Auth";
 import { systemContent } from "../lib/constants";
 
 // Types and Interfaces
-type Message = {
+type ChatMessage = {
   content: string;
   role: string;
   audio?: ArrayBuffer;
   voice?: string;
   id: number | string;
+  timestamp?: string;
 };
 
 type Speaker = "user" | "user-waiting" | "model" | null;
@@ -33,7 +34,7 @@ interface WebSocketContextValue {
   model: string;
   currentSpeaker: Speaker;
   microphoneOpen: boolean;
-  chatMessages: Message[];
+  chatMessages: ChatMessage[];
   sendMessage: (message: ArrayBuffer | string) => void;
   startStreaming: () => Promise<void>;
   stopStreaming: () => void;
@@ -72,7 +73,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   const [model, setModel] = useState("open_ai+gpt-4o-mini");
   const [currentSpeaker, setCurrentSpeaker] = useState<Speaker>(null);
   const [microphoneOpen, setMicrophoneOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [socketURL, setSocketUrl] = useState(
     `${DEEPGRAM_SOCKET_URL}?t=${Date.now()}`
   );
@@ -87,7 +88,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   const streamRef = useRef<MediaStream | null>(null);
   const pingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const scheduledAudioSourcesRef = useRef<AudioBufferSourceNode[]>([]);
-  const incomingMessage = useRef<Message | null>(null);
+  const incomingMessage = useRef<ChatMessage | null>(null);
 
   // Config settings
   const [configSettings, setConfigSettings] = useState({
@@ -181,14 +182,16 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
         case "ConversationText":
           console.log("Received conversation text:", msgObj);
           if (msgObj.content && msgObj.role === "user") {
-            // Siempre mostrar mensajes del usuario, incluso en User Talk Only
+            // Always show user messages
             console.log("Adding user message to chat:", msgObj.content);
-            setChatMessages((prev) => [
-              ...prev,
-              { ...msgObj, id: Date.now().toString() },
-            ]);
-          } else if (msgObj.content) {
-            // Agregar mensajes del asistente
+            const userMessage: ChatMessage = {
+              ...msgObj,
+              id: Date.now().toString(),
+              timestamp: new Date().toISOString()
+            };
+            setChatMessages((prev) => [...prev, userMessage]);
+          } else if (msgObj.content && msgObj.role === "assistant") {
+            // Handle assistant messages
             let text = msgObj.content;
             if (incomingMessage.current) {
               incomingMessage.current = {
@@ -203,7 +206,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
                 if (index !== -1) {
                   updatedMessages[index] = {
                     ...incomingMessage.current,
-                  } as Message;
+                  } as ChatMessage;
                 }
                 return updatedMessages;
               });
@@ -212,6 +215,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
                 ...msgObj,
                 voice,
                 id: Date.now().toString(),
+                timestamp: new Date().toISOString()
               };
             }
           }
@@ -221,7 +225,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           const ms = { ...incomingMessage.current };
           if (ms && Object.keys(ms).length) {
             // Agregar mensaje del asistente completado
-            setChatMessages((p) => [...p, ms as Message]);
+            setChatMessages((p) => [...p, ms as ChatMessage]);
           }
           setCurrentSpeaker("user-waiting");
           incomingMessage.current = null;

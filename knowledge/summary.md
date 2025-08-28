@@ -109,4 +109,3 @@ Cande agradece las recomendaciones y se lleva:
 * El moderador/a facilita el orden, pero no se identifica con nombre claro.
 * El documento es un ejemplo perfecto de dinámica de Vistage: se estructura en etapas (presentación, preguntas aclaratorias, sugerencias, compromisos).
 * La conversación es rica en feedback estratégico, emocional y operativo sobre cómo lanzar con éxito un nuevo producto dentro de una red de empresas.
-
