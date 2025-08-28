@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "id": "example_conversation_live_20250101_120000",
+    "mode": "live",
+    "startedAt": "2025-01-01T12:00:00.000Z",
+    "endedAt": "2025-01-01T12:30:00.000Z",
+    "phase": "descubrimiento",
+    "durationSec": 1800,
+    "language": "es",
+    "participants": ["Usuario", "Vistage AI"]
+  },
+  "messages": [
+    {
+      "id": "example_conversation_live_20250101_120000_msg_0",
+      "role": "user",
+      "text": "Hola, necesito ayuda con mi equipo de trabajo. Estamos teniendo problemas de comunicación.",
+      "ts": "2025-01-01T12:00:15.000Z"
+    },
+    {
+      "id": "example_conversation_live_20250101_120000_msg_1",
+      "role": "assistant",
+      "text": "Entiendo tu preocupación. Los problemas de comunicación en equipos son muy comunes y pueden afectar significativamente el rendimiento. ¿Podrías contarme más sobre la situación específica?",
+      "ts": "2025-01-01T12:00:45.000Z"
+    },
+    {
+      "id": "example_conversation_live_20250101_120000_msg_2",
+      "role": "user",
+      "text": "Bueno, parece que cuando damos instrucciones, no se entienden bien. Y luego hay malentendidos que causan retrasos en los proyectos.",
+      "ts": "2025-01-01T12:01:30.000Z"
+    },
+    {
+      "id": "example_conversation_live_20250101_120000_msg_3",
+      "role": "assistant",
+      "text": "Eso suena como un problema de claridad en la comunicación. ¿Has notado si hay patrones específicos en estos malentendidos? Por ejemplo, ¿ocurren más en ciertos tipos de tareas o con ciertos miembros del equipo?",
+      "ts": "2025-01-01T12:02:00.000Z"
+    },
+    {
+      "id": "example_conversation_live_20250101_120000_msg_4",
+      "role": "user",
+      "text": "Creo que es más con las tareas técnicas. Los desarrolladores a veces no entienden bien lo que necesitan los diseñadores.",
+      "ts": "2025-01-01T12:02:45.000Z"
+    }
+  ]
+}

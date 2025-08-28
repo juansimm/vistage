@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   console.log(deepgram)
 
   let { result: tokenResult, error: tokenError } =
-    await deepgram.auth.grantToken();
+    await deepgram.auth.grantToken({ ttl_seconds: 600 });
 
   if (tokenError) {
     return NextResponse.json(tokenError);

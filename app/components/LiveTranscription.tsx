@@ -73,7 +73,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
         </div>
       </div>
 
-      <div className="bg-gray-900/50 rounded-lg border border-gray-600 p-4 h-96 overflow-y-auto">
+      <div className="bg-gray-900/50 rounded-lg border border-gray-600 p-4 h-96 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
         {messages.length === 0 ? (
           <div className="text-center text-gray-400 py-8">
             <div className="text-2xl mb-3">💬</div>
@@ -146,10 +146,13 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
 
       {/* Live indicator */}
       {isSessionActive && (
-        <div className="mt-4 flex items-center justify-center">
+        <div className="sticky bottom-0 mt-4 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm py-2 rounded-t-lg border-t border-gray-600">
           <div className="flex items-center gap-3 text-green-400 text-sm px-4 py-2 bg-green-900/20 rounded-lg border border-green-500">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             Transcribiendo en vivo
+          </div>
+          <div className="text-gray-400 text-xs ml-4">
+            Latencia: ~200ms
           </div>
         </div>
       )}

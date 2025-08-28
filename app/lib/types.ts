@@ -40,3 +40,35 @@ export interface PromptTemplate {
   phase: string;
   isCustom: boolean;
 }
+
+// Nuevos tipos para conversaciones
+export interface ConvMessage {
+  id: string;
+  role: "user" | "assistant" | "system";
+  text: string;
+  ts: string; // ISO
+  audio?: ArrayBuffer;
+  voice?: string;
+}
+
+export interface ConversationMeta {
+  id: string; // mismo basename del archivo
+  mode: "live" | "useronly";
+  startedAt: string; // ISO
+  endedAt: string;   // ISO
+  phase: "descubrimiento" | "exploracion" | "plan_accion";
+  durationSec: number;
+  language?: "es" | "en" | "mix";
+  participants?: string[];
+}
+
+export interface ConversationFile {
+  meta: ConversationMeta;
+  messages: ConvMessage[];
+}
+
+export interface InjectedContextState {
+  conversationId: string;
+  injectedAt: string;
+  summaryTokens: number;
+}

@@ -34,12 +34,15 @@ interface WebSocketContextValue {
   currentSpeaker: Speaker;
   microphoneOpen: boolean;
   chatMessages: Message[];
+  userTalkOnly: boolean;
   sendMessage: (message: ArrayBuffer | string) => void;
   startStreaming: () => Promise<void>;
   stopStreaming: () => void;
   setVoice: (v: string) => void;
   setModel: (v: string) => void;
   replayAudio: (audioData: ArrayBuffer) => (() => void) | undefined;
+  toggleUserTalkOnly: () => void;
+  injectContext: (summary: { bullets: string[], quotes: string[] }, meta: any) => void;
 }
 
 type WebSocketProviderProps = { children: ReactNode };
@@ -77,6 +80,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   );
   const [startTime, setStartTime] = useState(0);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [userTalkOnly, setUserTalkOnly] = useState(false);
 
   // Refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -235,6 +239,13 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       }
     } else if (event.data instanceof ArrayBuffer) {
       console.log("Received audio data of length:", event.data.byteLength);
+      
+      // Guard clause para User Talk Only
+      if (userTalkOnly) {
+        console.log("User Talk Only activo - no reproduciendo audio del agente");
+        return;
+      }
+      
       if (incomingMessage.current) {
         incomingMessage.current.audio = incomingMessage.current.audio
           ? concatArrayBuffers(incomingMessage.current.audio, event.data)
@@ -472,6 +483,43 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     [stopStreaming]
   );
 
+  const toggleUserTalkOnly = useCallback(() => {
+    setUserTalkOnly(v => {
+      const next = !v;
+      // Opcional: notificar al agente que no hable
+      if (getWebSocket()?.readyState === WebSocket.OPEN) {
+        sendMessage(JSON.stringify({
+          type: "Settings",
+          agent: next ? { speak: { disabled: true } } : { speak: { disabled: false } }
+        }));
+      }
+      return next;
+    });
+  }, [sendMessage, getWebSocket]);
+
+  const injectContext = useCallback((summary: { bullets: string[], quotes: string[] }, meta: any) => {
+    if (getWebSocket()?.readyState === WebSocket.OPEN) {
+      const systemPrompt = `
+### Contexto previo (${meta.mode === "useronly" ? "UserOnly" : "Live"})
+- Fecha: ${meta.endedAt}
+- Fase: ${meta.phase}
+- Resumen:
+${summary.bullets.join("\n")}
+- Citas clave:
+${summary.quotes.map((q: string) => `> ${q}`).join("\n")}
+
+Directrices:
+- No repitas el resumen textualmente.
+- Usá el contexto sólo para enriquecer respuestas y seguimiento.
+      `.trim();
+
+      sendMessage(JSON.stringify({
+        type: "Prompt",
+        system: systemPrompt
+      }));
+    }
+  }, [sendMessage, getWebSocket]);
+
 
 
   // Effects
@@ -481,8 +529,18 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     if (token) {
       const fetchApiKey = async () => {
         try {
-          const key = await getToken(token as string);
-          setApiKey(key);
+          const response = await getToken(token as string);
+          const data = await response.json();
+          setApiKey(data.key);
+          
+          // Programar refresh del token antes de que expire
+          if (data.expires_in) {
+            const refreshTime = Math.max(0, (data.expires_in - 60) * 1000); // 60s antes
+            setTimeout(() => {
+              console.log("Refrescando token...");
+              fetchApiKey();
+            }, refreshTime);
+          }
         } catch (error) {
           console.error("Failed to fetch API key:", error);
         }
@@ -545,9 +603,12 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       currentSpeaker,
       microphoneOpen,
       chatMessages,
+      userTalkOnly,
       setModel: updateModel,
       setVoice: updateVoice,
       replayAudio,
+      toggleUserTalkOnly,
+      injectContext,
     }),
     [
       sendMessage,
@@ -561,9 +622,12 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       currentSpeaker,
       microphoneOpen,
       chatMessages,
+      userTalkOnly,
       updateModel,
       updateVoice,
       replayAudio,
+      toggleUserTalkOnly,
+      injectContext,
     ]
   );
 

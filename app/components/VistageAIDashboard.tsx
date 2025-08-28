@@ -7,6 +7,7 @@ import { SessionControls } from "./SessionControls";
 import { LiveTranscription } from "./LiveTranscription";
 
 import { AgentControls } from "./AgentControls";
+import { ConversationPicker } from "./ConversationPicker";
 import { SessionState, CoachingPhase } from "../lib/types";
 import { COACHING_PHASES, DEFAULT_PROMPTS } from "../lib/constants";
 import { saveConversation, generateConversationId, ConversationData } from "../lib/conversationStorage";
@@ -19,7 +20,8 @@ export const VistageAIDashboard: React.FC = () => {
     chatMessages,
     currentSpeaker,
     connection,
-    sendMessage
+    sendMessage,
+    userTalkOnly
   } = useWebSocketContext();
 
   // State
@@ -65,6 +67,37 @@ export const VistageAIDashboard: React.FC = () => {
     });
   }, [showInitialInterface, sessionState, currentPhase, chatMessages.length, connection]);
 
+  // Atajos de teclado
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Space: mute/unmute mic
+      if (event.code === 'Space' && sessionState.isActive) {
+        event.preventDefault();
+        if (microphoneOpen) {
+          stopStreaming();
+        } else {
+          startStreaming();
+        }
+      }
+      
+      // Shift+U: toggle User Talk Only
+      if (event.shiftKey && event.code === 'KeyU') {
+        event.preventDefault();
+        // Aquí necesitaríamos acceso al toggleUserTalkOnly del contexto
+        console.log('Atajo Shift+U presionado');
+      }
+      
+      // Cmd/Ctrl+K: Command Palette (placeholder)
+      if ((event.metaKey || event.ctrlKey) && event.code === 'KeyK') {
+        event.preventDefault();
+        console.log('Command Palette abierto');
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [sessionState.isActive, microphoneOpen, startStreaming, stopStreaming]);
+
   // Session management functions
   const handleStartSession = useCallback(() => {
     if (!currentPhase) return;
@@ -107,9 +140,20 @@ export const VistageAIDashboard: React.FC = () => {
     try {
       // Guardar la conversación antes de terminar
       if (conversationId && chatMessages.length > 0) {
+        // Determinar el modo basado en el estado actual
+        const mode: "live" | "useronly" = userTalkOnly ? "useronly" : "live";
+        
+        // Generar nombre de archivo con la nueva convención
+        const now = new Date();
+        const dateTime = now.toISOString()
+          .replace(/[-:]/g, '')
+          .replace(/\..+/, '')
+          .replace('T', '_');
+        const filename = `conversation_${mode}_${dateTime}`;
+        
         const conversationData: ConversationData = {
-          id: conversationId,
-          timestamp: new Date().toISOString(),
+          id: filename,
+          timestamp: now.toISOString(),
           phase: currentPhase || 'unknown',
           duration: sessionState.totalDuration,
           messages: chatMessages.map((message, index) => ({
@@ -123,7 +167,7 @@ export const VistageAIDashboard: React.FC = () => {
             isActive: sessionState.isActive,
             currentPhase: sessionState.currentPhase,
             startTime: sessionState.startTime?.toISOString() || null,
-            endTime: new Date().toISOString(),
+            endTime: now.toISOString(),
             totalDuration: sessionState.totalDuration
           },
           metadata: {
@@ -133,8 +177,31 @@ export const VistageAIDashboard: React.FC = () => {
           }
         };
 
-        await saveConversation(conversationData);
-        console.log('Conversación guardada exitosamente');
+        // Usar la nueva función de guardado con metadatos
+        const { saveConversationWithMeta } = await import('../lib/conversationStorage');
+        
+        const meta = {
+          id: filename,
+          mode,
+          startedAt: sessionState.startTime?.toISOString() || now.toISOString(),
+          endedAt: now.toISOString(),
+          phase: currentPhase as "descubrimiento" | "exploracion" | "plan_accion" || "descubrimiento",
+          durationSec: sessionState.totalDuration,
+          language: "es",
+          participants: ["Usuario", "Vistage AI"]
+        };
+        
+        const convMessages = chatMessages.map((message, index) => ({
+          id: `${filename}_msg_${index}`,
+          role: message.role as "user" | "assistant" | "system",
+          text: message.content,
+          ts: message.timestamp || now.toISOString(),
+          audio: message.audio,
+          voice: message.voice
+        }));
+        
+        await saveConversationWithMeta(meta, convMessages);
+        console.log('Conversación guardada exitosamente con metadatos:', filename);
       }
     } catch (error) {
       console.error('Error al guardar la conversación:', error);
@@ -273,15 +340,30 @@ export const VistageAIDashboard: React.FC = () => {
                 <span className="text-gray-400">Voice:</span>
                 <span className="text-blue-400 font-medium">Thalia</span>
               </div>
+              <div className="flex items-center gap-2 px-3 py-2 bg-gray-700/50 rounded-lg">
+                <span className="text-gray-400">Estado:</span>
+                <span className={`font-medium ${sessionState.isActive ? 'text-green-400' : 'text-red-400'}`}>
+                  {sessionState.isActive ? '● Activa' : '● Inactiva'}
+                </span>
+              </div>
+              {sessionState.isActive && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-700/50 rounded-lg">
+                  <span className="text-gray-400">Duración:</span>
+                  <span className="text-blue-400 font-medium">
+                    {Math.floor(sessionState.totalDuration / 60)}:{(sessionState.totalDuration % 60).toString().padStart(2, '0')}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Left Column - Controls */}
-          <div className="xl:col-span-1 space-y-6">
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+          {/* Left Column - Controls (40%) */}
+          <div className="xl:col-span-2 space-y-4">
             {/* Phase Selector */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-4">
+            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3">
               <PhaseSelector
                 currentPhase={currentPhase}
                 onPhaseChange={handlePhaseChange}
@@ -289,8 +371,17 @@ export const VistageAIDashboard: React.FC = () => {
               />
             </div>
 
+            {/* Prompt Editor */}
+            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3">
+              <PromptEditor
+                currentPhase={currentPhase}
+                onPromptUpdate={handlePromptUpdate}
+                isSessionActive={sessionState.isActive}
+              />
+            </div>
+
             {/* Session Controls */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-4">
+            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3">
               <SessionControls
                 sessionState={sessionState}
                 onStartSession={handleStartSession}
@@ -300,21 +391,16 @@ export const VistageAIDashboard: React.FC = () => {
                 currentPhase={currentPhase}
               />
             </div>
+
+            {/* Conversation Picker */}
+            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3">
+              <ConversationPicker />
+            </div>
           </div>
 
-          {/* Right Column - Main Content */}
-          <div className="xl:col-span-2 space-y-6">
-            {/* Prompt Editor */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-4">
-              <PromptEditor
-                currentPhase={currentPhase}
-                onPromptUpdate={handlePromptUpdate}
-                isSessionActive={sessionState.isActive}
-              />
-            </div>
-
-            {/* Live Transcription */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-4">
+          {/* Right Column - Chat (60%) */}
+          <div className="xl:col-span-3">
+            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3 h-full">
               <LiveTranscription
                 messages={chatMessages}
                 currentSpeaker={currentSpeaker}
