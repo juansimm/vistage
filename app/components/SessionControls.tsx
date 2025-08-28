@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { SessionState } from "../lib/types";
 import { AgentControls } from "./AgentControls";
 
@@ -20,6 +20,9 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
   onEndSession,
   currentPhase
 }) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -36,6 +39,30 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
     };
     
     return phaseNames[currentPhase] || currentPhase;
+  };
+
+  const handleEndSession = async () => {
+    setIsSaving(true);
+    setSaveStatus('Guardando conversación automáticamente...');
+    
+    try {
+      await onEndSession();
+      setSaveStatus('✅ Conversación guardada automáticamente');
+      
+      // Limpiar el mensaje después de 3 segundos
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 3000);
+    } catch (error) {
+      setSaveStatus('❌ Error al guardar la conversación');
+      
+      // Limpiar el mensaje después de 5 segundos
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 5000);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -79,6 +106,14 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
         {/* Session Controls */}
         <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-600">
           <h4 className="font-medium text-white mb-3 text-center text-sm">Acciones</h4>
+          
+          {/* Info sobre guardado automático */}
+          <div className="mb-3 p-2 bg-blue-900/20 border border-blue-500/30 rounded-lg">
+            <p className="text-xs text-blue-400 text-center">
+              💾 Las conversaciones se guardan automáticamente al finalizar
+            </p>
+          </div>
+          
           <div className="space-y-3">
             {!sessionState.isActive ? (
               <button
@@ -97,11 +132,29 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
                 </div>
                 
                 <button
-                  onClick={onEndSession}
-                  className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-all duration-200 hover:scale-105"
+                  onClick={handleEndSession}
+                  disabled={isSaving}
+                  className={`w-full px-4 py-2 text-white text-sm rounded-lg transition-all duration-200 hover:scale-105 ${
+                    isSaving 
+                      ? 'bg-gray-600 cursor-not-allowed' 
+                      : 'bg-red-600 hover:bg-red-700'
+                  }`}
                 >
-                  ⏹️ Terminar Sesión
+                  {isSaving ? '💾 Guardando...' : '⏹️ Terminar Sesión'}
                 </button>
+                
+                {/* Save Status Message */}
+                {saveStatus && (
+                  <div className={`text-center text-xs p-2 rounded-lg ${
+                    saveStatus.includes('✅') 
+                      ? 'bg-green-900/30 text-green-400 border border-green-500'
+                      : saveStatus.includes('❌')
+                      ? 'bg-red-900/30 text-red-400 border border-red-500'
+                      : 'bg-blue-900/30 text-blue-400 border border-blue-500'
+                  }`}>
+                    {saveStatus}
+                  </div>
+                )}
               </>
             )}
           </div>

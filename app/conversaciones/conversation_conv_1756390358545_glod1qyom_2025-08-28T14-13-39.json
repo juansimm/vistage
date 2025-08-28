@@ -1,0 +1,56 @@
+{
+  "id": "conv_1756390358545_glod1qyom",
+  "timestamp": "2025-08-28T14:13:39.251Z",
+  "phase": "discovery",
+  "duration": 60,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hola, hola.",
+      "timestamp": "2025-08-28T14:13:39.251Z"
+    },
+    {
+      "role": "assistant",
+      "content": "¡Hola! Es un placer estar aquí. ¿En qué puedo asistirte hoy?",
+      "timestamp": "2025-08-28T14:13:39.251Z",
+      "audio": {},
+      "voice": "aura-2-selena-es"
+    },
+    {
+      "role": "user",
+      "content": "¿Cómo es tu nombre?",
+      "timestamp": "2025-08-28T14:13:39.251Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Soy Bibi, tu consultora ejecutiva de negocios. Estoy aquí para ayudarte a resolver desafíos estratégicos y tomar decisiones informadas. ¿Cuál es el tema o la situación que te gustaría discutir hoy?",
+      "timestamp": "2025-08-28T14:13:39.251Z",
+      "audio": {},
+      "voice": "aura-2-selena-es"
+    },
+    {
+      "role": "user",
+      "content": "¿En qué fase estamos?",
+      "timestamp": "2025-08-28T14:13:39.251Z"
+    },
+    {
+      "role": "assistant",
+      "content": "Actualmente estamos en la fase de presentación (Azul). En esta fase, mi objetivo es comprender profundamente el desafío empresarial que enfrentas. Quiero hacer preguntas y escuchar tu perspectiva para aclarar el contexto y los detalles relevantes. ¿Puedes compartir más sobre el desafío específico que estás experimentando?",
+      "timestamp": "2025-08-28T14:13:39.251Z",
+      "audio": {},
+      "voice": "aura-2-selena-es"
+    }
+  ],
+  "sessionState": {
+    "isActive": true,
+    "currentPhase": "discovery",
+    "startTime": "2025-08-28T14:12:38.545Z",
+    "endTime": "2025-08-28T14:13:39.251Z",
+    "totalDuration": 60
+  },
+  "metadata": {
+    "llm": "OpenAI GPT-4o-mini",
+    "voice": "Thalia",
+    "version": "1.0.0"
+  }
+}

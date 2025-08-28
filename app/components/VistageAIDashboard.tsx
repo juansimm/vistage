@@ -9,6 +9,7 @@ import { LiveTranscription } from "./LiveTranscription";
 import { AgentControls } from "./AgentControls";
 import { SessionState, CoachingPhase } from "../lib/types";
 import { COACHING_PHASES, DEFAULT_PROMPTS } from "../lib/constants";
+import { saveConversation, generateConversationId, ConversationData } from "../lib/conversationStorage";
 
 export const VistageAIDashboard: React.FC = () => {
   const {
@@ -33,6 +34,7 @@ export const VistageAIDashboard: React.FC = () => {
   });
   const [customPrompts, setCustomPrompts] = useState<Record<string, string>>({});
   const [showInitialInterface, setShowInitialInterface] = useState(true);
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   // Timer effect
   useEffect(() => {
@@ -67,6 +69,9 @@ export const VistageAIDashboard: React.FC = () => {
   const handleStartSession = useCallback(() => {
     if (!currentPhase) return;
     
+    const newConversationId = generateConversationId();
+    setConversationId(newConversationId);
+    
     setSessionState({
       isActive: true,
       currentPhase,
@@ -98,20 +103,58 @@ export const VistageAIDashboard: React.FC = () => {
     startStreaming();
   }, [startStreaming]);
 
-  const handleEndSession = useCallback(() => {
-    setSessionState({
-      isActive: false,
-      currentPhase: null,
-      startTime: null,
-      endTime: new Date(),
-      isPaused: false,
-      totalDuration: 0
-    });
-    
-    stopStreaming();
-    setCurrentPhase(null);
-    setShowInitialInterface(true);
-  }, [stopStreaming]);
+  const handleEndSession = useCallback(async () => {
+    try {
+      // Guardar la conversación antes de terminar
+      if (conversationId && chatMessages.length > 0) {
+        const conversationData: ConversationData = {
+          id: conversationId,
+          timestamp: new Date().toISOString(),
+          phase: currentPhase || 'unknown',
+          duration: sessionState.totalDuration,
+          messages: chatMessages.map((message, index) => ({
+            role: message.role,
+            content: message.content,
+            timestamp: new Date().toISOString(),
+            audio: message.audio,
+            voice: message.voice
+          })),
+          sessionState: {
+            isActive: sessionState.isActive,
+            currentPhase: sessionState.currentPhase,
+            startTime: sessionState.startTime?.toISOString() || null,
+            endTime: new Date().toISOString(),
+            totalDuration: sessionState.totalDuration
+          },
+          metadata: {
+            llm: "OpenAI GPT-4o-mini",
+            voice: "Thalia",
+            version: "1.0.0"
+          }
+        };
+
+        await saveConversation(conversationData);
+        console.log('Conversación guardada exitosamente');
+      }
+    } catch (error) {
+      console.error('Error al guardar la conversación:', error);
+    } finally {
+      // Terminar la sesión independientemente del resultado del guardado
+      setSessionState({
+        isActive: false,
+        currentPhase: null,
+        startTime: null,
+        endTime: new Date(),
+        isPaused: false,
+        totalDuration: 0
+      });
+      
+      stopStreaming();
+      setCurrentPhase(null);
+      setShowInitialInterface(true);
+      setConversationId(null);
+    }
+  }, [stopStreaming, conversationId, chatMessages, currentPhase, sessionState]);
 
   const handlePhaseChange = useCallback((phaseId: string) => {
     setCurrentPhase(phaseId);
