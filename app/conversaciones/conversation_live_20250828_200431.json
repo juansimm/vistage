@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "id": "conversation_live_20250828_200431",
+    "mode": "live",
+    "startedAt": "2025-08-28T20:03:00.582Z",
+    "endedAt": "2025-08-28T20:04:31.375Z",
+    "phase": "presentacion",
+    "durationSec": 90,
+    "language": "es",
+    "participants": [
+      "Usuario",
+      "Vistage AI"
+    ]
+  },
+  "messages": [
+    {
+      "id": "conversation_live_20250828_200431_msg_0",
+      "role": "user",
+      "text": "Hola, hola,",
+      "ts": "2025-08-28T20:04:31.377Z"
+    },
+    {
+      "id": "conversation_live_20250828_200431_msg_1",
+      "role": "assistant",
+      "text": "Hola, ¿cómo estás? Estoy aquí para ayudarte con cualquier desafío empresarial que estés enfrentando. ¿En qué puedo asistirte hoy?",
+      "ts": "2025-08-28T20:04:31.377Z",
+      "audio": {},
+      "voice": "aura-2-selena-es"
+    },
+    {
+      "id": "conversation_live_20250828_200431_msg_2",
+      "role": "user",
+      "text": "mira, tengo unos problemas con mi empresa de finanzas,",
+      "ts": "2025-08-28T20:04:31.377Z"
+    },
+    {
+      "id": "conversation_live_20250828_200431_msg_3",
+      "role": "assistant",
+      "text": "Entiendo, y es fundamental abordar esos problemas de manera efectiva. Para empezar, me gustaría comprender mejor la situación. 1. **¿Cuál es el impacto empresarial real de este desafío?**\n2. **¿Qué supuestos estás haciendo sobre esta situación?**\n3. **¿Quién más se ve afectado por esta decisión?**\n\nResponder a estas preguntas nos ayudará a profundizar en el problema.",
+      "ts": "2025-08-28T20:04:31.377Z",
+      "audio": {},
+      "voice": "aura-2-selena-es"
+    },
+    {
+      "id": "conversation_live_20250828_200431_msg_4",
+      "role": "user",
+      "text": "Sí, mira, el impacto empresarial es que",
+      "ts": "2025-08-28T20:04:31.377Z"
+    },
+    {
+      "id": "conversation_live_20250828_200431_msg_5",
+      "role": "user",
+      "text": "pues,",
+      "ts": "2025-08-28T20:04:31.377Z"
+    },
+    {
+      "id": "conversation_live_20250828_200431_msg_6",
+      "role": "user",
+      "text": "estamos generando poca plata,",
+      "ts": "2025-08-28T20:04:31.377Z"
+    },
+    {
+      "id": "conversation_live_20250828_200431_msg_7",
+      "role": "user",
+      "text": "qué supuesto estamos haciendo sobre esta asociación, vendría a ser que todo mal,",
+      "ts": "2025-08-28T20:04:31.377Z"
+    }
+  ]
+}

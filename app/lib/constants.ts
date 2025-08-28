@@ -120,40 +120,51 @@ export const systemContent = `Eres "Bibi", una consultora ejecutiva de negocios 
 
 Recuerda: No eres solo una asistente de IA - eres una socia empresarial estratégica ayudando a ejecutivos a tomar mejores decisiones. Cada interacción debe acercarlos a la claridad, la perspicacia y los próximos pasos accionables.`;
 
-// Vistage AI Coaching Phases
+// Vistage AI Coaching Phases según PRD
 export const COACHING_PHASES = [
   {
-    id: "discovery",
-    name: "Descubrimiento",
-    description: "Explorar el contexto y desafíos actuales",
-    objective: "Identificar el problema principal y establecer objetivos claros",
+    id: "presentacion",
+    name: "Presentación del Caso",
+    description: "El presentador expone su situación",
+    objective: "Vivi escucha y comprende el contexto completo",
     duration: 15,
-    color: "from-blue-500 to-cyan-500",
-    icon: "🔍"
+    color: "from-blue-500 to-blue-600",
+    bgColor: "bg-blue-500/20",
+    borderColor: "border-blue-500",
+    textColor: "text-blue-400",
+    icon: "📋",
+    phase: "azul"
   },
   {
-    id: "exploration",
-    name: "Exploración",
-    description: "Profundizar en las causas raíz y alternativas",
-    objective: "Analizar diferentes perspectivas y generar opciones",
+    id: "preguntas",
+    name: "Preguntas",
+    description: "Cada miembro hace su pregunta",
+    objective: "Vivi formula la última pregunta única y no redundante",
     duration: 20,
-    color: "from-purple-500 to-pink-500",
-    icon: "💡"
+    color: "from-red-500 to-red-600",
+    bgColor: "bg-red-500/20",
+    borderColor: "border-red-500",
+    textColor: "text-red-400",
+    icon: "❓",
+    phase: "roja"
   },
   {
-    id: "action-planning",
-    name: "Plan de Acción",
-    description: "Diseñar estrategias y pasos concretos",
-    objective: "Crear un plan ejecutable con métricas de seguimiento",
+    id: "recomendaciones",
+    name: "Recomendaciones",
+    description: "Cada miembro da su devolución",
+    objective: "Vivi cierra con síntesis + 3-5 pasos accionables",
     duration: 15,
-    color: "from-green-500 to-emerald-500",
-    icon: "📋"
+    color: "from-green-500 to-green-600",
+    bgColor: "bg-green-500/20",
+    borderColor: "border-green-500",
+    textColor: "text-green-400",
+    icon: "✅",
+    phase: "verde"
   }
 ];
 
 export const DEFAULT_PROMPTS = {
-  discovery: "Eres un coach ejecutivo experto. En esta fase de descubrimiento, tu objetivo es ayudar al cliente a identificar claramente el problema principal que está enfrentando. Haz preguntas abiertas y reflexivas que le permitan explorar su situación actual, sus objetivos y los obstáculos que percibe. Mantén un tono empático y profesional.",
-  exploration: "Ahora estamos en la fase de exploración. Profundiza en las causas raíz del problema identificado. Ayuda al cliente a considerar diferentes perspectivas, alternativas y opciones que no había considerado antes. Usa técnicas de coaching como el modelo GROW o preguntas poderosas para expandir su pensamiento.",
-  "action-planning": "En la fase de planificación de acción, tu rol es facilitar la creación de un plan concreto y ejecutable. Ayuda al cliente a definir pasos específicos, recursos necesarios, métricas de éxito y posibles obstáculos. Asegúrate de que el plan sea SMART (específico, medible, alcanzable, relevante y con tiempo definido).",
-  commitment: "En esta fase final de compromiso, tu objetivo es asegurar que el cliente esté completamente comprometido con la implementación del plan. Confirma las responsabilidades, establece fechas límite, identifica posibles barreras y acuerda el seguimiento. Termina la sesión con un resumen claro de los compromisos asumidos."
+  presentacion: "FASE AZUL - PRESENTACIÓN DEL CASO: Eres Vivi, la IA de Vistage. En esta fase tu rol es ESCUCHAR ACTIVAMENTE. El presentador expone su caso y tu trabajo es comprender profundamente sin interrumpir ni dar soluciones. Haz preguntas aclaratorias ocasionales solo para comprender mejor el contexto. Tu objetivo: absorber toda la información para las siguientes fases.",
+  preguntas: "FASE ROJA - PREGUNTAS: Ahora es tu momento de hacer preguntas estratégicas. Basándote en todo lo escuchado en la presentación, formula preguntas poderosas que ayuden al grupo a explorar ángulos no considerados. Evita preguntas redundantes que ya se hayan hecho. Tu pregunta debe ser única, perspicaz y abrir nuevas líneas de pensamiento.",
+  recomendaciones: "FASE VERDE - RECOMENDACIONES: Es momento de sintetizar. Después de escuchar todas las recomendaciones del grupo, proporciona una síntesis inteligente del caso y entrega 3-5 pasos accionables concretos. Tu recomendación debe ser la culminación de todo lo discutido, agregando valor estratégico único.",
 };

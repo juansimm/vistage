@@ -34,14 +34,12 @@ interface WebSocketContextValue {
   currentSpeaker: Speaker;
   microphoneOpen: boolean;
   chatMessages: Message[];
-  userTalkOnly: boolean;
   sendMessage: (message: ArrayBuffer | string) => void;
   startStreaming: () => Promise<void>;
   stopStreaming: () => void;
   setVoice: (v: string) => void;
   setModel: (v: string) => void;
   replayAudio: (audioData: ArrayBuffer) => (() => void) | undefined;
-  toggleUserTalkOnly: () => void;
   injectContext: (summary: { bullets: string[], quotes: string[] }, meta: any) => void;
 }
 
@@ -73,14 +71,14 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   const [voice, setVoice] = useState("aura-2-selena-es");
   const [model, setModel] = useState("open_ai+gpt-4o-mini");
   const [currentSpeaker, setCurrentSpeaker] = useState<Speaker>(null);
-  const [microphoneOpen, setMicrophoneOpen] = useState(true);
+  const [microphoneOpen, setMicrophoneOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [socketURL, setSocketUrl] = useState(
     `${DEEPGRAM_SOCKET_URL}?t=${Date.now()}`
   );
   const [startTime, setStartTime] = useState(0);
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [userTalkOnly, setUserTalkOnly] = useState(false);
+  // Removed userTalkOnly functionality
 
   // Refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -183,11 +181,14 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
         case "ConversationText":
           console.log("Received conversation text:", msgObj);
           if (msgObj.content && msgObj.role === "user") {
+            // Siempre mostrar mensajes del usuario, incluso en User Talk Only
+            console.log("Adding user message to chat:", msgObj.content);
             setChatMessages((prev) => [
               ...prev,
               { ...msgObj, id: Date.now().toString() },
             ]);
           } else if (msgObj.content) {
+            // Agregar mensajes del asistente
             let text = msgObj.content;
             if (incomingMessage.current) {
               incomingMessage.current = {
@@ -219,6 +220,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           console.log("Agent audio done");
           const ms = { ...incomingMessage.current };
           if (ms && Object.keys(ms).length) {
+            // Agregar mensaje del asistente completado
             setChatMessages((p) => [...p, ms as Message]);
           }
           setCurrentSpeaker("user-waiting");
@@ -240,11 +242,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     } else if (event.data instanceof ArrayBuffer) {
       console.log("Received audio data of length:", event.data.byteLength);
       
-      // Guard clause para User Talk Only
-      if (userTalkOnly) {
-        console.log("User Talk Only activo - no reproduciendo audio del agente");
-        return;
-      }
+      // Audio del agente se reproduce normalmente
       
       if (incomingMessage.current) {
         incomingMessage.current.audio = incomingMessage.current.audio
@@ -483,19 +481,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     [stopStreaming]
   );
 
-  const toggleUserTalkOnly = useCallback(() => {
-    setUserTalkOnly(v => {
-      const next = !v;
-      // Opcional: notificar al agente que no hable
-      if (getWebSocket()?.readyState === WebSocket.OPEN) {
-        sendMessage(JSON.stringify({
-          type: "Settings",
-          agent: next ? { speak: { disabled: true } } : { speak: { disabled: false } }
-        }));
-      }
-      return next;
-    });
-  }, [sendMessage, getWebSocket]);
+  // toggleUserTalkOnly function removed
 
   const injectContext = useCallback((summary: { bullets: string[], quotes: string[] }, meta: any) => {
     if (getWebSocket()?.readyState === WebSocket.OPEN) {
@@ -609,11 +595,9 @@ Directrices:
       currentSpeaker,
       microphoneOpen,
       chatMessages,
-      userTalkOnly,
       setModel: updateModel,
       setVoice: updateVoice,
       replayAudio,
-      toggleUserTalkOnly,
       injectContext,
     }),
     [
@@ -628,11 +612,9 @@ Directrices:
       currentSpeaker,
       microphoneOpen,
       chatMessages,
-      userTalkOnly,
       updateModel,
       updateVoice,
       replayAudio,
-      toggleUserTalkOnly,
       injectContext,
     ]
   );

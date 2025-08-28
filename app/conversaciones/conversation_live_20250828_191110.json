@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "id": "conversation_live_20250828_191110",
+    "mode": "live",
+    "startedAt": "2025-08-28T19:10:18.837Z",
+    "endedAt": "2025-08-28T19:11:10.442Z",
+    "phase": "presentacion",
+    "durationSec": 51,
+    "language": "es",
+    "participants": [
+      "Usuario",
+      "Vistage AI"
+    ]
+  },
+  "messages": [
+    {
+      "id": "conversation_live_20250828_191110_msg_0",
+      "role": "user",
+      "text": "Hola, ¿cómo estás?",
+      "ts": "2025-08-28T19:11:10.444Z"
+    },
+    {
+      "id": "conversation_live_20250828_191110_msg_1",
+      "role": "assistant",
+      "text": "¡Hola! Estoy aquí y lista para ayudarte con cualquier desafío estratégico que enfrentes. ¿Cuál es el tema que te gustaría discutir hoy?",
+      "ts": "2025-08-28T19:11:10.444Z",
+      "audio": {},
+      "voice": "aura-2-selena-es"
+    },
+    {
+      "id": "conversation_live_20250828_191110_msg_2",
+      "role": "user",
+      "text": "Sí, mirá, tengo una compañía de medicina la verdad es que estamos teniendo muchos problemas porque mis empleados no pueden",
+      "ts": "2025-08-28T19:11:10.444Z"
+    },
+    {
+      "id": "conversation_live_20250828_191110_msg_3",
+      "role": "user",
+      "text": "agarrar todo lo que son las manualidades ahora, por ejemplo, estamos procesando todo lo que son recetas médicas, y estas recetas médicas son escritas y vistas por mis empleados.",
+      "ts": "2025-08-28T19:11:10.444Z"
+    },
+    {
+      "id": "conversation_live_20250828_191110_msg_4",
+      "role": "user",
+      "text": "¿Hay algún proceso de software algo que podría utilizar? ¿Qué qué me podrías recomendar un poco?",
+      "ts": "2025-08-28T19:11:10.444Z"
+    }
+  ]
+}

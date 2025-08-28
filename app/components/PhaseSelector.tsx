@@ -16,42 +16,89 @@ export const PhaseSelector: React.FC<PhaseSelectorProps> = ({
 }) => {
   return (
     <div>
-      <h3 className="text-xl font-semibold text-white mb-4 text-center">
-        Fases de Coaching
+      <h3 className="text-lg font-semibold text-white mb-4 text-center">
+        🎯 Fases de la Sesión Vistage
       </h3>
-      <div className="grid grid-cols-3 gap-4">
-        {COACHING_PHASES.map((phase) => (
+      <div className="space-y-4">
+        {COACHING_PHASES.map((phase, index) => (
           <button
             key={phase.id}
             onClick={() => onPhaseChange(phase.id)}
             disabled={isSessionActive}
             className={`
-              relative p-3 rounded-lg border-2 transition-all duration-300 min-h-[100px] flex flex-col items-center justify-center
+              relative w-full p-5 rounded-xl border-2 transition-all duration-300 flex items-center gap-4
               ${currentPhase === phase.id
-                ? `border-white bg-gradient-to-r ${phase.color} shadow-lg scale-105`
-                : 'border-gray-600 bg-gray-800/50 hover:border-gray-400 hover:bg-gray-700/50'
+                ? `${phase.borderColor} bg-gradient-to-r ${phase.color} shadow-xl scale-[1.02] border-opacity-100`
+                : 'border-gray-600/50 bg-gray-800/30 hover:border-gray-400/70 hover:bg-gray-700/40'
               }
-              ${isSessionActive ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:scale-102'}
+              ${isSessionActive ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:scale-[1.01]'}
             `}
           >
-            <div className="text-center">
-              <div className="text-xl mb-2">{phase.icon}</div>
-              <h4 className="font-semibold text-white text-xs mb-1 leading-tight">
-                {phase.name}
-              </h4>
-              <p className="text-xs text-gray-300 mb-1 font-medium">
-                {phase.duration} min
-              </p>
-              <div className="text-xs text-gray-400 leading-tight">
-                {phase.description}
-              </div>
+            {/* Número de fase */}
+            <div className={`
+              flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg
+              ${currentPhase === phase.id 
+                ? 'bg-white/20 text-white shadow-lg' 
+                : 'bg-gray-700/50 text-gray-400'
+              }
+            `}>
+              {index + 1}
             </div>
+            
+            {/* Contenido de la fase */}
+            <div className="flex-grow text-left">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xl">{phase.icon}</span>
+                <h4 className={`font-bold text-base ${
+                  currentPhase === phase.id ? 'text-white' : 'text-gray-200'
+                }`}>
+                  {phase.name}
+                </h4>
+                <div className={`
+                  px-2 py-1 rounded-full text-xs font-medium
+                  ${currentPhase === phase.id 
+                    ? `${phase.bgColor} ${phase.textColor}` 
+                    : 'bg-gray-700/50 text-gray-400'
+                  }
+                `}>
+                  {phase.duration} min
+                </div>
+              </div>
+              <p className={`text-xs leading-relaxed ${
+                currentPhase === phase.id ? 'text-white/90' : 'text-gray-400'
+              }`}>
+                {phase.description}
+              </p>
+              <p className={`text-xs mt-1 italic ${
+                currentPhase === phase.id ? 'text-white/70' : 'text-gray-500'
+              }`}>
+                {phase.objective}
+              </p>
+            </div>
+            
+            {/* Indicador de selección */}
             {currentPhase === phase.id && (
-              <div className="absolute -top-2 -right-2 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
+              <div className="flex-shrink-0">
+                <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                </div>
               </div>
             )}
           </button>
+        ))}
+      </div>
+      
+      {/* Indicador de progreso */}
+      <div className="mt-6 flex justify-center items-center gap-2">
+        {COACHING_PHASES.map((phase, index) => (
+          <div
+            key={phase.id}
+            className={`h-2 flex-1 rounded-full transition-all duration-300 ${
+              currentPhase === phase.id
+                ? `bg-gradient-to-r ${phase.color}`
+                : 'bg-gray-700/50'
+            }`}
+          />
         ))}
       </div>
     </div>

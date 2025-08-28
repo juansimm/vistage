@@ -33,9 +33,9 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
     if (!currentPhase) return null;
     
     const phaseNames: Record<string, string> = {
-      discovery: "Descubrimiento",
-      exploration: "Exploración",
-      "action-planning": "Plan de Acción"
+      presentacion: "Presentación del Caso",
+      preguntas: "Preguntas",
+      recomendaciones: "Recomendaciones"
     };
     
     return phaseNames[currentPhase] || currentPhase;
@@ -116,13 +116,23 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
           
           <div className="space-y-3">
             {!sessionState.isActive ? (
-              <button
-                onClick={onStartSession}
-                disabled={!currentPhase}
-                className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm rounded-lg transition-all duration-200 hover:scale-105"
-              >
-                🚀 Iniciar Sesión
-              </button>
+              <>
+                <button
+                  onClick={onStartSession}
+                  disabled={!currentPhase}
+                  className="w-full px-4 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm rounded-lg transition-all duration-200 hover:scale-105"
+                >
+                  🚀 Iniciar Sesión
+                </button>
+                
+                {!currentPhase && (
+                  <div className="p-2 bg-orange-900/20 border border-orange-500/30 rounded-lg">
+                    <p className="text-xs text-orange-400 text-center">
+                      ⚠️ Selecciona una fase en la pestaña "Fases" para iniciar la sesión
+                    </p>
+                  </div>
+                )}
+              </>
             ) : (
               <>
                 {/* Microphone Control - Integrated in actions */}

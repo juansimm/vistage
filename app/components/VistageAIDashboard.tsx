@@ -1,14 +1,10 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { useWebSocketContext } from "../context/WebSocketContext";
-import { PhaseSelector } from "./PhaseSelector";
-import { PromptEditor } from "./PromptEditor";
-import { SessionControls } from "./SessionControls";
 import { LiveTranscription } from "./LiveTranscription";
-
 import { AgentControls } from "./AgentControls";
-import { ConversationPicker } from "./ConversationPicker";
 import { CommandPalette } from "./CommandPalette";
+import { Sidebar } from "./Sidebar";
 import { SessionState, CoachingPhase, ConversationMeta } from "../lib/types";
 import { COACHING_PHASES, DEFAULT_PROMPTS } from "../lib/constants";
 import { saveConversation, generateConversationId, ConversationData, loadConversation, buildExecutiveSummary } from "../lib/conversationStorage";
@@ -22,8 +18,6 @@ export const VistageAIDashboard: React.FC = () => {
     currentSpeaker,
     connection,
     sendMessage,
-    userTalkOnly,
-    toggleUserTalkOnly,
     injectContext
   } = useWebSocketContext();
 
@@ -41,6 +35,7 @@ export const VistageAIDashboard: React.FC = () => {
   const [showInitialInterface, setShowInitialInterface] = useState(true);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Timer effect
   useEffect(() => {
@@ -84,13 +79,6 @@ export const VistageAIDashboard: React.FC = () => {
         }
       }
       
-      // Shift+U: toggle User Talk Only
-      if (event.shiftKey && event.code === 'KeyU') {
-        event.preventDefault();
-        toggleUserTalkOnly();
-        console.log('Atajo Shift+U presionado - User Talk Only toggled');
-      }
-      
       // Cmd/Ctrl+K: Command Palette
       if ((event.metaKey || event.ctrlKey) && event.code === 'KeyK') {
         event.preventDefault();
@@ -101,7 +89,7 @@ export const VistageAIDashboard: React.FC = () => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [sessionState.isActive, microphoneOpen, startStreaming, stopStreaming, toggleUserTalkOnly]);
+  }, [sessionState.isActive, microphoneOpen, startStreaming, stopStreaming]);
 
   // Session management functions
   const handleStartSession = useCallback(async () => {
@@ -147,8 +135,15 @@ export const VistageAIDashboard: React.FC = () => {
     try {
       // Guardar la conversación antes de terminar
       if (conversationId && chatMessages.length > 0) {
-        // Determinar el modo basado en el estado actual
-        const mode: "live" | "useronly" = userTalkOnly ? "useronly" : "live";
+        console.log('Iniciando guardado de conversación...', {
+          conversationId,
+          messagesCount: chatMessages.length,
+          currentPhase,
+          sessionDuration: sessionState.totalDuration
+        });
+
+        // Determinar el modo como live siempre
+        const mode: "live" | "useronly" = "live";
         
         // Generar nombre de archivo con la nueva convención
         const now = new Date();
@@ -158,32 +153,6 @@ export const VistageAIDashboard: React.FC = () => {
           .replace('T', '_');
         const filename = `conversation_${mode}_${dateTime}`;
         
-        const conversationData: ConversationData = {
-          id: filename,
-          timestamp: now.toISOString(),
-          phase: currentPhase || 'unknown',
-          duration: sessionState.totalDuration,
-          messages: chatMessages.map((message, index) => ({
-            role: message.role,
-            content: message.content,
-            timestamp: new Date().toISOString(),
-            audio: message.audio,
-            voice: message.voice
-          })),
-          sessionState: {
-            isActive: sessionState.isActive,
-            currentPhase: sessionState.currentPhase,
-            startTime: sessionState.startTime?.toISOString() || null,
-            endTime: now.toISOString(),
-            totalDuration: sessionState.totalDuration
-          },
-          metadata: {
-            llm: "OpenAI GPT-4o-mini",
-            voice: "Thalia",
-            version: "1.0.0"
-          }
-        };
-
         // Usar la nueva función de guardado con metadatos
         const { saveConversationWithMeta } = await import('../lib/conversationStorage');
         
@@ -202,16 +171,30 @@ export const VistageAIDashboard: React.FC = () => {
           id: `${filename}_msg_${index}`,
           role: message.role as "user" | "assistant" | "system",
           text: message.content,
-          ts: new Date().toISOString(), // Usar timestamp actual para cada mensaje
+          ts: message.timestamp || new Date().toISOString(),
           audio: message.audio,
           voice: message.voice
         }));
         
+        console.log('Guardando conversación con datos:', {
+          meta,
+          messagesCount: convMessages.length,
+          firstMessage: convMessages[0]?.text?.substring(0, 50) + '...',
+          lastMessage: convMessages[convMessages.length - 1]?.text?.substring(0, 50) + '...'
+        });
+        
         await saveConversationWithMeta(meta, convMessages);
         console.log('Conversación guardada exitosamente con metadatos:', filename);
+      } else {
+        console.log('No hay conversación que guardar:', {
+          conversationId,
+          messagesCount: chatMessages.length
+        });
       }
     } catch (error) {
       console.error('Error al guardar la conversación:', error);
+      // Mostrar alert al usuario del error
+      alert('Error al guardar la conversación: ' + (error as Error).message);
     } finally {
       // Terminar la sesión independientemente del resultado del guardado
       setSessionState({
@@ -228,7 +211,7 @@ export const VistageAIDashboard: React.FC = () => {
       setShowInitialInterface(true);
       setConversationId(null);
     }
-  }, [stopStreaming, conversationId, chatMessages, currentPhase, sessionState, userTalkOnly]);
+  }, [stopStreaming, conversationId, chatMessages, currentPhase, sessionState]);
 
   const handlePhaseChange = useCallback((phaseId: string) => {
     setCurrentPhase(phaseId);
@@ -258,187 +241,142 @@ export const VistageAIDashboard: React.FC = () => {
     }
   }, [injectContext]);
 
-  // Si no hay sesión activa y es la primera vez, mostrar interfaz inicial
-  if (!sessionState.isActive) {
-    console.log("Showing initial interface", { showInitialInterface, sessionState });
-    return (
-      <div className="min-h-screen bg-gray-900 text-white p-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent mb-2">
-            Vistage AI
-          </h1>
-          <p className="text-gray-400 text-lg">
-            Tu asistente de coaching ejecutivo inteligente
-          </p>
-        </div>
+  // Layout principal con sidebar siempre visible
+  const MainLayout = ({ children }: { children: React.ReactNode }) => (
+    <div className="h-full bg-gray-900 text-white flex overflow-hidden">
+      {/* Sidebar */}
+      <Sidebar
+        currentPhase={currentPhase}
+        onPhaseChange={handlePhaseChange}
+        sessionState={sessionState}
+        onStartSession={handleStartSession}
+        onPauseSession={handlePauseSession}
+        onResumeSession={handleResumeSession}
+        onEndSession={handleEndSession}
+        onPromptUpdate={handlePromptUpdate}
+        isCollapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
 
-        <div className="max-w-4xl mx-auto">
-          {/* Fases de Coaching */}
-          <PhaseSelector
-            currentPhase={currentPhase}
-            onPhaseChange={handlePhaseChange}
-            isSessionActive={false}
-          />
-
-          {/* Botón de Inicio Principal */}
-          <div className="text-center mt-8">
-            <button
-              onClick={handleStartSession}
-              disabled={!currentPhase}
-              className={`
-                px-8 py-4 text-xl font-bold rounded-lg transition-all duration-300
-                ${currentPhase 
-                  ? 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white shadow-lg hover:scale-105' 
-                  : 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                }
-              `}
-            >
-              {currentPhase ? '🚀 Iniciar Sesión de Coaching' : 'Selecciona una fase primero'}
-            </button>
-          </div>
-
-          {/* Editor de Prompts */}
-          {currentPhase && (
-            <div className="mt-8">
-              <PromptEditor
-                currentPhase={currentPhase}
-                onPromptUpdate={handlePromptUpdate}
-                isSessionActive={false}
-              />
-            </div>
-          )}
-
-          {/* Estado de Conexión */}
-          <div className="mt-8 text-center">
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${
-              connection 
-                ? 'bg-green-900/30 text-green-400 border border-green-500' 
-                : 'bg-red-900/30 text-red-400 border border-red-500'
-            }`}>
-              <div className={`w-2 h-2 rounded-full ${
-                connection ? 'bg-green-500' : 'bg-red-500'
-              }`}></div>
-              <span className="text-sm">
-                {connection ? 'Conectado' : 'Desconectado'}
-              </span>
-            </div>
-          </div>
-        </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {children}
       </div>
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onInjectContext={handleInjectContextFromPalette}
+      />
+    </div>
+  );
+
+  // Si no hay sesión activa, mostrar interfaz inicial
+  if (!sessionState.isActive) {
+    return (
+      <MainLayout>
+        <div className="flex-1 flex items-center justify-center px-6 py-4">
+          <div className="max-w-3xl w-full text-center">
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent mb-4">
+              Vistage AI Voice Session
+            </h1>
+            <p className="text-gray-300 text-xl mb-12">
+              Tu asistente de coaching ejecutivo inteligente está listo
+            </p>
+
+            {/* Quick Start */}
+            <div className="border border-gray-600 rounded-lg p-6 mb-8">
+              <h2 className="text-2xl font-semibold text-white mb-6">Inicio Rápido</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="flex flex-col items-center gap-3 p-4 border border-gray-700 rounded-lg">
+                  <span className="text-3xl">1️⃣</span>
+                  <h3 className="text-white font-medium">Selecciona una Fase</h3>
+                  <p className="text-gray-400 text-sm text-center">Elige la fase de coaching en el sidebar</p>
+                </div>
+                <div className="flex flex-col items-center gap-3 p-4 border border-gray-700 rounded-lg">
+                  <span className="text-3xl">2️⃣</span>
+                  <h3 className="text-white font-medium">Inicia la Sesión</h3>
+                  <p className="text-gray-400 text-sm text-center">Presiona "Iniciar Sesión" en el panel de control</p>
+                </div>
+                <div className="flex flex-col items-center gap-3 p-4 border border-gray-700 rounded-lg">
+                  <span className="text-3xl">3️⃣</span>
+                  <h3 className="text-white font-medium">Activa el Micrófono</h3>
+                  <p className="text-gray-400 text-sm text-center">Haz clic en el botón del micrófono para empezar</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="flex justify-center gap-6">
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
+                connection 
+                  ? 'text-green-400 border-green-600' 
+                  : 'text-red-400 border-red-600'
+              }`}>
+                <div className={`w-2 h-2 rounded-full ${
+                  connection ? 'bg-green-500 animate-pulse' : 'bg-red-500'
+                }`}></div>
+                <span className="text-sm font-medium">
+                  {connection ? 'Conectado' : 'Desconectado'}
+                </span>
+              </div>
+              
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg text-blue-400 border border-blue-600">
+                <span className="text-sm font-medium">Fase: {currentPhase ? COACHING_PHASES.find(p => p.id === currentPhase)?.name : 'No seleccionada'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </MainLayout>
     );
   }
 
-  console.log("Showing main interface", { 
-    showInitialInterface, 
-    sessionState, 
-    currentPhase, 
-    chatMessages: chatMessages.length 
-  });
-
+  // Layout para sesión activa
   return (
-    <div className="bg-gray-900 text-white p-4 h-screen overflow-hidden">
-      <div className="max-w-7xl mx-auto h-full flex flex-col">
-        {/* Header compacto con badges */}
-        <div className="sticky top-0 z-10 mb-6 p-3 bg-gray-900/80 backdrop-blur-sm rounded-lg border border-gray-600">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-            <div className="text-center lg:text-left">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
-                Vistage AI
-              </h1>
-            </div>
-            <div className="flex flex-wrap justify-center lg:justify-end gap-2 text-xs">
-              <div className="flex items-center gap-1 px-2 py-1 bg-gray-700/50 rounded-md">
-                <span className="text-gray-400">LLM</span>
-                <span className="text-green-400 font-medium">GPT-4o-mini</span>
-              </div>
-              <div className="flex items-center gap-1 px-2 py-1 bg-gray-700/50 rounded-md">
-                <span className="text-gray-400">Voice</span>
-                <span className="text-blue-400 font-medium">Thalia</span>
-              </div>
-              <div className="flex items-center gap-1 px-2 py-1 bg-gray-700/50 rounded-md">
-                <span className="text-gray-400">Estado</span>
-                <span className={`font-medium ${sessionState.isActive ? 'text-green-400' : 'text-red-400'}`}>
-                  {sessionState.isActive ? '● Activa' : '● Inactiva'}
-                </span>
-              </div>
-              {sessionState.isActive && (
-                <div className="flex items-center gap-1 px-2 py-1 bg-gray-700/50 rounded-md">
-                  <span className="text-gray-400">Duración</span>
-                  <span className="text-blue-400 font-medium">
-                    {Math.floor(sessionState.totalDuration / 60)}:{(sessionState.totalDuration % 60).toString().padStart(2, '0')}
-                  </span>
-                </div>
-              )}
-              {userTalkOnly && (
-                <div className="flex items-center gap-1 px-2 py-1 bg-red-700/50 rounded-md">
-                  <span className="text-red-400 font-medium">User Talk Only</span>
-                </div>
-              )}
-            </div>
+    <MainLayout>
+      {/* Header compacto */}
+      <div className="border-b border-gray-700 px-6 py-3 flex items-center justify-between">
+        <div>
+          <h1 className="text-lg font-bold bg-gradient-to-r from-blue-400 to-green-400 bg-clip-text text-transparent">
+            Sesión de Coaching Activa
+          </h1>
+          {currentPhase && (
+            <p className="text-sm text-gray-400">
+              Fase: {COACHING_PHASES.find(p => p.id === currentPhase)?.name}
+            </p>
+          )}
+        </div>
+        
+        <div className="flex items-center gap-4">
+          {/* Duración */}
+          <div className="flex items-center gap-2 px-3 py-1 border border-purple-600 rounded text-purple-400">
+            <span className="text-sm">⏱️</span>
+            <span className="font-mono font-semibold text-sm">
+              {Math.floor(sessionState.totalDuration / 60)}:{(sessionState.totalDuration % 60).toString().padStart(2, '0')}
+            </span>
+          </div>
+          
+          {/* Status */}
+          <div className="flex items-center gap-2 px-3 py-1 border border-green-600 rounded text-green-400">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">En Vivo</span>
           </div>
         </div>
-
-        {/* Main Content Grid - Layout 2 columnas */}
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-4 flex-1 min-h-0">
-          {/* Left Column - Controls (40%) */}
-          <div className="xl:col-span-2 space-y-3 overflow-y-auto">
-            {/* Phase Selector */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3 shadow-md">
-              <PhaseSelector
-                currentPhase={currentPhase}
-                onPhaseChange={handlePhaseChange}
-                isSessionActive={sessionState.isActive}
-              />
-            </div>
-
-            {/* Prompt Editor */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3 shadow-md">
-              <PromptEditor
-                currentPhase={currentPhase}
-                onPromptUpdate={handlePromptUpdate}
-                isSessionActive={sessionState.isActive}
-              />
-            </div>
-
-            {/* Session Controls */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3 shadow-md">
-              <SessionControls
-                sessionState={sessionState}
-                onStartSession={handleStartSession}
-                onPauseSession={handlePauseSession}
-                onResumeSession={handleResumeSession}
-                onEndSession={handleEndSession}
-                currentPhase={currentPhase}
-              />
-            </div>
-
-            {/* Conversation Picker */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3 shadow-md">
-              <ConversationPicker />
-            </div>
-          </div>
-
-          {/* Right Column - Chat (60%) */}
-          <div className="xl:col-span-3 flex flex-col">
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-3 h-full flex flex-col shadow-md">
-              <LiveTranscription
-                messages={chatMessages}
-                currentSpeaker={currentSpeaker}
-                isSessionActive={sessionState.isActive}
-                microphoneOpen={microphoneOpen}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Command Palette */}
-        <CommandPalette
-          isOpen={showCommandPalette}
-          onClose={() => setShowCommandPalette(false)}
-          onInjectContext={handleInjectContextFromPalette}
-        />
       </div>
-    </div>
+
+      {/* Main Content Area - Full width chat */}
+      <div className="flex-1 p-4">
+        <div className="h-full border border-gray-700 rounded-lg">
+          <LiveTranscription
+            messages={chatMessages}
+            currentSpeaker={currentSpeaker}
+            isSessionActive={sessionState.isActive}
+            microphoneOpen={microphoneOpen}
+            currentPhase={currentPhase}
+          />
+        </div>
+      </div>
+    </MainLayout>
   );
 };
