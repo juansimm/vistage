@@ -23,10 +23,10 @@ export const AgentChatBubble = ({ message }: { message: any }) => {
                   <DgSvg />
                 )}
               </div>
-              <div className="glass flex p-4 rounded-e-xl rounded-es-xl max-w-full md:max-w-none">
+              <div className="glass flex p-4 rounded-e-xl rounded-es-xl max-w-full md:max-w-none border border-stone-700/30 backdrop-blur-md">
                 <div className="flex flex-col overflow-hidden pre-overflow-y-auto">
                   <AgentMessageHeader message={message} />
-                  <div className="text-sm font-normal pt-2 text-white/80 markdown">
+                  <div className="text-sm font-normal pt-2 text-stone-100 markdown leading-relaxed">
                     <TextContent text={message.content} />
                   </div>
                 </div>

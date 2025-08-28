@@ -84,7 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               currentPhase={currentPhase}
             />
             {sessionState.isActive && (
-              <div className="border-t border-gray-600/50 pt-6">
+              <div className="border-t border-stone-600/30 pt-6">
                 <AgentControls />
               </div>
             )}
@@ -117,10 +117,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   if (isCollapsed) {
     return (
-      <div className="w-16 border-r border-gray-700 flex flex-col items-center py-4 space-y-4">
+      <div className="w-16 border-r border-stone-700/30 bg-stone-900/40 backdrop-blur-sm flex flex-col items-center py-4 space-y-4">
         <button
           onClick={onToggleCollapse}
-          className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+          className="p-2 text-stone-400 hover:text-yellow-400 hover:bg-stone-800/50 rounded-lg transition-all duration-300 transform hover:scale-110"
         >
           ▶️
         </button>
@@ -128,10 +128,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`p-2 rounded-lg transition-colors text-xl ${
+            className={`p-2 rounded-lg transition-all duration-300 text-xl transform hover:scale-110 ${
               activeTab === tab.id
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                ? 'modern-button text-stone-900 font-bold'
+                : 'text-stone-400 hover:text-yellow-400 hover:bg-stone-800/50'
             }`}
             title={tab.name}
           >
@@ -143,28 +143,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }
 
   return (
-    <div className="w-80 border-r border-gray-700 flex flex-col h-full">
+    <div className="w-80 border-r border-stone-700/30 bg-stone-900/20 backdrop-blur-md flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-        <h2 className="text-lg font-bold text-white">Panel de Control</h2>
+      <div className="p-4 border-b border-stone-700/30 flex items-center justify-between glass">
+        <h2 className="text-lg font-bold text-yellow-400 drop-shadow-glowYellow tracking-wide">Panel de Control</h2>
         <button
           onClick={onToggleCollapse}
-          className="p-1 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded transition-colors"
+          className="p-1 text-stone-400 hover:text-yellow-400 hover:bg-stone-800/50 rounded transition-all duration-300 transform hover:scale-110"
         >
           ◀️
         </button>
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex flex-wrap border-b border-gray-700">
+      <div className="flex flex-wrap border-b border-stone-700/30 bg-stone-900/10">
         {sidebarTabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 min-w-0 px-3 py-3 text-xs font-medium transition-colors border-b-2 ${
+            className={`flex-1 min-w-0 px-3 py-3 text-xs font-medium transition-all duration-300 border-b-2 hover:transform hover:-translate-y-0.5 ${
               activeTab === tab.id
-                ? 'border-blue-500 bg-blue-600/20 text-blue-400'
-                : 'border-transparent text-gray-400 hover:text-white hover:bg-gray-800/50'
+                ? 'border-yellow-500 bg-yellow-500/10 text-yellow-400 backdrop-blur-sm'
+                : 'border-transparent text-stone-400 hover:text-yellow-400 hover:bg-stone-800/30'
             }`}
           >
             <div className="flex flex-col items-center gap-1">
@@ -181,12 +181,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Footer Status */}
-      <div className="p-4 border-t border-gray-700">
-        <div className="text-xs text-gray-400 text-center">
-          <p className="mb-1">Vistage AI Voice Session</p>
+      <div className="p-4 border-t border-stone-700/30 glass">
+        <div className="text-xs text-stone-400 text-center">
+          <p className="mb-2 font-medium tracking-wide">Vistage AI Voice Session</p>
           <div className="flex items-center justify-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${sessionState.isActive ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></div>
-            <span>{sessionState.isActive ? 'Sesión Activa' : 'Sesión Inactiva'}</span>
+            <div className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              sessionState.isActive 
+                ? 'bg-green-500 animate-pulse drop-shadow-glowGreen' 
+                : 'bg-stone-500'
+            }`}></div>
+            <span className={`font-medium ${
+              sessionState.isActive ? 'text-green-400' : 'text-stone-400'
+            }`}>
+              {sessionState.isActive ? 'Sesión Activa' : 'Sesión Inactiva'}
+            </span>
           </div>
         </div>
       </div>

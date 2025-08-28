@@ -11,13 +11,13 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="h-screen w-screen overflow-hidden">
+    <div className="h-screen w-screen overflow-hidden bg-gradient-stone">
       {/* height 4rem */}
-      <div className="bg-gradient-to-b from-black/50 to-black/10 backdrop-blur-[2px] h-[4rem] flex items-center">
+      <div className="glass border-b border-stone-700/30 h-[4rem] flex items-center">
         <header className="mx-auto w-full px-4 md:px-6 lg:px-8 flex items-center justify-center pt-4 md:pt-0 gap-2">
           <div>
             <a className="flex items-center" href="/">
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-2xl font-bold text-yellow-400 drop-shadow-glowYellow tracking-wide">
                 Vistage AI
               </h1>
             </a>
