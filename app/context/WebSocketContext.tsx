@@ -517,6 +517,15 @@ Directrices:
         type: "Prompt",
         system: systemPrompt
       }));
+      
+      console.log("Contexto inyectado exitosamente:", {
+        conversationId: meta.id,
+        mode: meta.mode,
+        bullets: summary.bullets.length,
+        quotes: summary.quotes.length
+      });
+    } else {
+      console.error("No se puede inyectar contexto - WebSocket no está abierto");
     }
   }, [sendMessage, getWebSocket]);
 
@@ -529,18 +538,15 @@ Directrices:
     if (token) {
       const fetchApiKey = async () => {
         try {
-          const response = await getToken(token as string);
-          const data = await response.json();
-          setApiKey(data.key);
+          const apiKey = await getToken(token as string);
+          setApiKey(apiKey);
           
-          // Programar refresh del token antes de que expire
-          if (data.expires_in) {
-            const refreshTime = Math.max(0, (data.expires_in - 60) * 1000); // 60s antes
-            setTimeout(() => {
-              console.log("Refrescando token...");
-              fetchApiKey();
-            }, refreshTime);
-          }
+          // Programar refresh del token cada 8 minutos (480s)
+          const refreshTime = 8 * 60 * 1000; // 8 minutos
+          setTimeout(() => {
+            console.log("Refrescando token...");
+            fetchApiKey();
+          }, refreshTime);
         } catch (error) {
           console.error("Failed to fetch API key:", error);
         }

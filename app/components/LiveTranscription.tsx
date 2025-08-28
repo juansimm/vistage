@@ -13,12 +13,14 @@ interface LiveTranscriptionProps {
   messages: Message[];
   currentSpeaker: string | null;
   isSessionActive: boolean;
+  microphoneOpen?: boolean;
 }
 
 export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
   messages,
   currentSpeaker,
-  isSessionActive
+  isSessionActive,
+  microphoneOpen = false
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -51,6 +53,24 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
     );
   }
 
+  if (isSessionActive && !microphoneOpen) {
+    return (
+      <div className="p-8 bg-gray-800/30 rounded-xl border border-gray-600 text-center">
+        <div className="text-4xl mb-4">🎙️</div>
+        <h3 className="text-xl font-semibold text-white mb-3">
+          Sesión Activa
+        </h3>
+        <p className="text-gray-400 text-sm mb-4">
+          La sesión está activa. Activa el micrófono para comenzar la conversación.
+        </p>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-900/30 rounded-lg border border-blue-500">
+          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+          <span className="text-sm text-blue-400">Presiona el botón del micrófono para comenzar</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -73,7 +93,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
         </div>
       </div>
 
-      <div className="bg-gray-900/50 rounded-lg border border-gray-600 p-4 h-96 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+      <div className="bg-gray-900/50 rounded-lg border border-gray-600 p-4 flex-1 overflow-y-auto" style={{ minHeight: '400px' }}>
         {messages.length === 0 ? (
           <div className="text-center text-gray-400 py-8">
             <div className="text-2xl mb-3">💬</div>
@@ -144,9 +164,9 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
         )}
       </div>
 
-      {/* Live indicator */}
-      {isSessionActive && (
-        <div className="sticky bottom-0 mt-4 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm py-2 rounded-t-lg border-t border-gray-600">
+      {/* Live indicator - sticky bottom */}
+      {isSessionActive && microphoneOpen && (
+        <div className="sticky bottom-0 mt-4 flex items-center justify-center bg-gray-900/90 backdrop-blur-sm py-2 rounded-t-lg border-t border-gray-600">
           <div className="flex items-center gap-3 text-green-400 text-sm px-4 py-2 bg-green-900/20 rounded-lg border border-green-500">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             Transcribiendo en vivo

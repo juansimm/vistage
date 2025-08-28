@@ -124,18 +124,36 @@ export const buildExecutiveSummary = (messages: ConvMessage[]): { bullets: strin
   const userMessages = messages.filter(m => m.role === "user");
   const assistantMessages = messages.filter(m => m.role === "assistant");
   
+  // Extraer temas clave de los mensajes del usuario
+  const userTopics = userMessages
+    .map(m => m.text.toLowerCase())
+    .join(' ')
+    .split(' ')
+    .filter(word => word.length > 4)
+    .reduce((acc: Record<string, number>, word) => {
+      acc[word] = (acc[word] || 0) + 1;
+      return acc;
+    }, {});
+  
+  const topTopics = Object.entries(userTopics)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 3)
+    .map(([word]) => word);
+  
   const bullets = [
-    `Total de mensajes: ${messages.length}`,
-    `Mensajes del usuario: ${userMessages.length}`,
-    `Mensajes del asistente: ${assistantMessages.length}`,
-    `Duración estimada: ${Math.round(messages.length * 0.5)} minutos`,
-    `Tema principal: ${userMessages[0]?.text?.substring(0, 100) || 'No disponible'}...`
+    `Sesión de ${Math.round(messages.length * 0.5)} minutos con ${messages.length} intercambios`,
+    `Usuario expresó ${userMessages.length} puntos principales`,
+    `IA proporcionó ${assistantMessages.length} respuestas de coaching`,
+    `Temas principales: ${topTopics.join(', ')}`,
+    `Tipo de conversación: ${userMessages.length > assistantMessages.length ? 'Usuario dominante' : 'Conversación balanceada'}`,
+    `Último mensaje: ${messages[messages.length - 1]?.role === 'user' ? 'Usuario' : 'IA'}`
   ];
   
+  // Seleccionar citas más representativas
   const quotes = messages
-    .filter(m => m.text.length > 20)
-    .slice(0, 3)
-    .map(m => m.text.substring(0, 150) + (m.text.length > 150 ? '...' : ''));
+    .filter(m => m.text.length > 30 && m.text.length < 200)
+    .slice(-5) // Últimos 5 mensajes más representativos
+    .map(m => m.text.substring(0, 120) + (m.text.length > 120 ? '...' : ''));
   
   return { bullets, quotes };
 };
