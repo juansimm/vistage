@@ -19,12 +19,11 @@ export const InitialLoadAgent = ({
           className="relative block w-full glass p-6 sm:p-8 lg:p-12 rounded-xl"
         >
           <h2 className="font-favorit mt-2 block font-bold text-xl text-gray-100">
-            Deepgram Agent API Demo
+            Vistage AI - Coaching Ejecutivo
           </h2>
           <span className="mt-2 block text-sm text-gray-100/70">
-            <Headphones /> For optimal enjoyment, we recommend using headphones
-            while using this application. Minor bugs and annoyances may appear
-            while using this demo. Pull requests are welcome.
+            <Headphones /> Para una mejor experiencia, recomendamos usar auriculares
+            mientras usas esta aplicación. Pueden aparecer pequeños errores durante el uso de este demo.
           </span>
           <span className="mt-4 block font-semibold">
             <div className="bg-white text-black rounded px-6 md:px-8 py-3 font-semibold sm:w-fit sm:mx-auto opacity-90">

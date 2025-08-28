@@ -119,3 +119,50 @@ export const systemContent = `Eres "Bibi", una consultora ejecutiva de negocios 
 - Mantener el enfoque en los objetivos de la fase actual
 
 Recuerda: No eres solo una asistente de IA - eres una socia empresarial estratégica ayudando a ejecutivos a tomar mejores decisiones. Cada interacción debe acercarlos a la claridad, la perspicacia y los próximos pasos accionables.`;
+
+// Vistage AI Coaching Phases
+export const COACHING_PHASES = [
+  {
+    id: "discovery",
+    name: "Descubrimiento",
+    description: "Explorar el contexto y desafíos actuales",
+    objective: "Identificar el problema principal y establecer objetivos claros",
+    duration: 15,
+    color: "from-blue-500 to-cyan-500",
+    icon: "🔍"
+  },
+  {
+    id: "exploration",
+    name: "Exploración",
+    description: "Profundizar en las causas raíz y alternativas",
+    objective: "Analizar diferentes perspectivas y generar opciones",
+    duration: 20,
+    color: "from-purple-500 to-pink-500",
+    icon: "💡"
+  },
+  {
+    id: "action-planning",
+    name: "Plan de Acción",
+    description: "Diseñar estrategias y pasos concretos",
+    objective: "Crear un plan ejecutable con métricas de seguimiento",
+    duration: 15,
+    color: "from-green-500 to-emerald-500",
+    icon: "📋"
+  },
+  {
+    id: "commitment",
+    name: "Compromiso",
+    description: "Confirmar responsabilidades y próximos pasos",
+    objective: "Establecer accountability y timeline de implementación",
+    duration: 10,
+    color: "from-orange-500 to-red-500",
+    icon: "✅"
+  }
+];
+
+export const DEFAULT_PROMPTS = {
+  discovery: "Eres un coach ejecutivo experto. En esta fase de descubrimiento, tu objetivo es ayudar al cliente a identificar claramente el problema principal que está enfrentando. Haz preguntas abiertas y reflexivas que le permitan explorar su situación actual, sus objetivos y los obstáculos que percibe. Mantén un tono empático y profesional.",
+  exploration: "Ahora estamos en la fase de exploración. Profundiza en las causas raíz del problema identificado. Ayuda al cliente a considerar diferentes perspectivas, alternativas y opciones que no había considerado antes. Usa técnicas de coaching como el modelo GROW o preguntas poderosas para expandir su pensamiento.",
+  "action-planning": "En la fase de planificación de acción, tu rol es facilitar la creación de un plan concreto y ejecutable. Ayuda al cliente a definir pasos específicos, recursos necesarios, métricas de éxito y posibles obstáculos. Asegúrate de que el plan sea SMART (específico, medible, alcanzable, relevante y con tiempo definido).",
+  commitment: "En esta fase final de compromiso, tu objetivo es asegurar que el cliente esté completamente comprometido con la implementación del plan. Confirma las responsabilidades, establece fechas límite, identifica posibles barreras y acuerda el seguimiento. Termina la sesión con un resumen claro de los compromisos asumidos."
+};

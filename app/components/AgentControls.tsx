@@ -3,21 +3,6 @@ import { useCallback } from "react";
 import { MicrophoneIcon } from "./icons/MicrophoneIcon";
 import { useWebSocketContext } from "../context/WebSocketContext";
 
-export const AgentSettings = () => {
-  return (
-    <>
-      <div className="flex items-center gap-2.5 text-sm mr-4">
-        <span className="hidden md:inline-block text-white/50 font-inter">
-          LLM: <span className="text-white">Open AI gpt-4o-mini</span>
-        </span>
-        <span className="hidden md:inline-block text-white/50 font-inter">
-          Voice: <span className="text-white">Thalia</span>
-        </span>
-      </div>
-    </>
-  );
-};
-
 export const AgentControls = () => {
   const { startStreaming, stopStreaming, microphoneOpen } =
     useWebSocketContext();
@@ -39,9 +24,6 @@ export const AgentControls = () => {
 
   return (
     <div className="relative">
-      <div className="absolute w-full -top-[4.5rem] py-4 flex justify-center">
-        <AgentSettings />
-      </div>
       <div className="flex bg-[#101014] rounded-full justify-center">
         <span
           className={`rounded-full p-0.5 ${microphoneOpen
