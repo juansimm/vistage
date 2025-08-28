@@ -5,7 +5,7 @@ import { PhaseSelector } from "./PhaseSelector";
 import { PromptEditor } from "./PromptEditor";
 import { SessionControls } from "./SessionControls";
 import { LiveTranscription } from "./LiveTranscription";
-import { AudioVisualizer } from "./AudioVisualizer";
+
 import { AgentControls } from "./AgentControls";
 import { SessionState, CoachingPhase } from "../lib/types";
 import { COACHING_PHASES, DEFAULT_PROMPTS } from "../lib/constants";
@@ -234,9 +234,9 @@ export const VistageAIDashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
           {/* Left Column - Controls */}
-          <div className="xl:col-span-2 space-y-6">
+          <div className="xl:col-span-1 space-y-6">
             {/* Phase Selector */}
             <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-4">
               <PhaseSelector
@@ -257,20 +257,11 @@ export const VistageAIDashboard: React.FC = () => {
                 currentPhase={currentPhase}
               />
             </div>
-
-            {/* Audio Visualizer */}
-            <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-4">
-              <AudioVisualizer
-                isActive={sessionState.isActive}
-                microphoneOpen={microphoneOpen}
-                currentSpeaker={currentSpeaker}
-              />
-            </div>
           </div>
 
           {/* Right Column - Main Content */}
-          <div className="xl:col-span-3 space-y-6">
-            {/* Prompt Editor - Smaller */}
+          <div className="xl:col-span-2 space-y-6">
+            {/* Prompt Editor */}
             <div className="bg-gray-800/30 rounded-lg border border-gray-600 p-4">
               <PromptEditor
                 currentPhase={currentPhase}
@@ -290,8 +281,8 @@ export const VistageAIDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Connection Status and Microphone Control */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-gray-800/30 rounded-lg border border-gray-600">
+        {/* Connection Status */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 p-4 bg-gray-800/30 rounded-lg border border-gray-600">
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${
               connection ? 'bg-green-500' : 'bg-red-500'
@@ -299,14 +290,6 @@ export const VistageAIDashboard: React.FC = () => {
             <span className="text-sm">
               {connection ? 'Conectado' : 'Desconectado'}
             </span>
-          </div>
-          
-          {/* Microphone Control - Integrated with session */}
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-400">
-              Micrófono: {microphoneOpen ? 'Activado' : 'Desactivado'}
-            </span>
-            <AgentControls />
           </div>
         </div>
       </div>

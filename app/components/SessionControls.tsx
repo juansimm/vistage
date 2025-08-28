@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { SessionState } from "../lib/types";
+import { AgentControls } from "./AgentControls";
 
 interface SessionControlsProps {
   sessionState: SessionState;
@@ -31,8 +32,7 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
     const phaseNames: Record<string, string> = {
       discovery: "Descubrimiento",
       exploration: "Exploración",
-      "action-planning": "Plan de Acción",
-      commitment: "Compromiso"
+      "action-planning": "Plan de Acción"
     };
     
     return phaseNames[currentPhase] || currentPhase;
@@ -79,7 +79,7 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
         {/* Session Controls */}
         <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-600">
           <h4 className="font-medium text-white mb-3 text-center text-sm">Acciones</h4>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {!sessionState.isActive ? (
               <button
                 onClick={onStartSession}
@@ -90,21 +90,12 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
               </button>
             ) : (
               <>
-                {sessionState.isPaused ? (
-                  <button
-                    onClick={onResumeSession}
-                    className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-all duration-200 hover:scale-105"
-                  >
-                    ▶️ Reanudar Sesión
-                  </button>
-                ) : (
-                  <button
-                    onClick={onPauseSession}
-                    className="w-full px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm rounded-lg transition-all duration-200 hover:scale-105"
-                  >
-                    ⏸️ Pausar Sesión
-                  </button>
-                )}
+                {/* Microphone Control - Integrated in actions */}
+                <div className="flex flex-col items-center gap-2 p-3 bg-gray-700/30 rounded-lg">
+                  <span className="text-xs text-gray-400 font-medium">Control de Micrófono</span>
+                  <AgentControls />
+                </div>
+                
                 <button
                   onClick={onEndSession}
                   className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-all duration-200 hover:scale-105"

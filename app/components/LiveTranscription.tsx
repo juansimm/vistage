@@ -73,7 +73,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
         </div>
       </div>
 
-      <div className="bg-gray-900/50 rounded-lg border border-gray-600 p-4 h-64 overflow-y-auto">
+      <div className="bg-gray-900/50 rounded-lg border border-gray-600 p-4 h-96 overflow-y-auto">
         {messages.length === 0 ? (
           <div className="text-center text-gray-400 py-8">
             <div className="text-2xl mb-3">💬</div>

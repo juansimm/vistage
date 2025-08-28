@@ -16,17 +16,17 @@ export const PhaseSelector: React.FC<PhaseSelectorProps> = ({
 }) => {
   return (
     <div>
-      <h3 className="text-xl font-semibold text-white mb-6 text-center">
+      <h3 className="text-xl font-semibold text-white mb-4 text-center">
         Fases de Coaching
       </h3>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-4">
         {COACHING_PHASES.map((phase) => (
           <button
             key={phase.id}
             onClick={() => onPhaseChange(phase.id)}
             disabled={isSessionActive}
             className={`
-              relative p-4 rounded-xl border-2 transition-all duration-300 min-h-[120px] flex flex-col items-center justify-center
+              relative p-3 rounded-lg border-2 transition-all duration-300 min-h-[100px] flex flex-col items-center justify-center
               ${currentPhase === phase.id
                 ? `border-white bg-gradient-to-r ${phase.color} shadow-lg scale-105`
                 : 'border-gray-600 bg-gray-800/50 hover:border-gray-400 hover:bg-gray-700/50'
@@ -35,7 +35,7 @@ export const PhaseSelector: React.FC<PhaseSelectorProps> = ({
             `}
           >
             <div className="text-center">
-              <div className="text-2xl mb-2">{phase.icon}</div>
+              <div className="text-xl mb-2">{phase.icon}</div>
               <h4 className="font-semibold text-white text-xs mb-1 leading-tight">
                 {phase.name}
               </h4>

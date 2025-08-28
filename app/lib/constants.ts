@@ -148,15 +148,6 @@ export const COACHING_PHASES = [
     duration: 15,
     color: "from-green-500 to-emerald-500",
     icon: "📋"
-  },
-  {
-    id: "commitment",
-    name: "Compromiso",
-    description: "Confirmar responsabilidades y próximos pasos",
-    objective: "Establecer accountability y timeline de implementación",
-    duration: 10,
-    color: "from-orange-500 to-red-500",
-    icon: "✅"
   }
 ];
 

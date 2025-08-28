@@ -35,11 +35,11 @@ export const PromptEditor: React.FC<PromptEditorProps> = ({
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-white mb-4 text-center">
+      <h3 className="text-lg font-semibold text-white mb-3 text-center">
         Prompt de Coaching - {currentPhase.charAt(0).toUpperCase() + currentPhase.slice(1)}
       </h3>
-      <div className="p-4 bg-gray-800/50 rounded-xl border border-gray-600">
-        <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">
+      <div className="p-3 bg-gray-800/50 rounded-lg border border-gray-600 max-h-32 overflow-y-auto">
+        <p className="text-white text-xs leading-relaxed whitespace-pre-wrap">
           {defaultPrompt}
         </p>
       </div>
