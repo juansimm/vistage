@@ -18,8 +18,7 @@ export const VistageAIDashboard: React.FC = () => {
     chatMessages,
     currentSpeaker,
     connection,
-    sendMessage,
-    updateSystemPrompt
+    sendMessage
   } = useWebSocketContext();
 
   // State
@@ -117,12 +116,9 @@ export const VistageAIDashboard: React.FC = () => {
   const handlePhaseChange = useCallback((phaseId: string) => {
     setCurrentPhase(phaseId);
     
-    // Update system prompt based on phase
-    const prompt = customPrompts[phaseId] || DEFAULT_PROMPTS[phaseId as keyof typeof DEFAULT_PROMPTS];
-    if (prompt) {
-      updateSystemPrompt(prompt);
-    }
-  }, [customPrompts, updateSystemPrompt]);
+    // Note: System prompt is now handled directly in the WebSocket context
+    // using the systemContent from constants
+  }, [customPrompts]);
 
   const handlePromptUpdate = useCallback((prompt: string) => {
     if (!currentPhase) return;
@@ -131,10 +127,7 @@ export const VistageAIDashboard: React.FC = () => {
       ...prev,
       [currentPhase]: prompt
     }));
-    
-    // Update the system prompt in the WebSocket context
-    updateSystemPrompt(prompt);
-  }, [currentPhase, updateSystemPrompt]);
+  }, [currentPhase]);
 
   // Si no hay sesión activa y es la primera vez, mostrar interfaz inicial
   if (!sessionState.isActive) {

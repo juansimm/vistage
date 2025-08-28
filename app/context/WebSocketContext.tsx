@@ -40,7 +40,6 @@ interface WebSocketContextValue {
   setVoice: (v: string) => void;
   setModel: (v: string) => void;
   replayAudio: (audioData: ArrayBuffer) => (() => void) | undefined;
-  updateSystemPrompt: (prompt: string) => void;
 }
 
 type WebSocketProviderProps = { children: ReactNode };
@@ -78,7 +77,6 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   );
   const [startTime, setStartTime] = useState(0);
   const [apiKey, setApiKey] = useState<string | null>(null);
-  const [systemPrompt, setSystemPrompt] = useState(systemContent);
 
   // Refs
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -109,7 +107,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           type: model.split("+")[0],
           model: model.split("+")[1]
         },
-        prompt: systemPrompt
+        prompt: systemContent
       },
       speak: {
         provider: {
@@ -474,29 +472,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
     [stopStreaming]
   );
 
-  // Function to update system prompt
-  const updateSystemPrompt = useCallback((prompt: string) => {
-    setSystemPrompt(prompt);
-    
-    // Update config settings with new prompt
-    const newSettings = {
-      ...configSettings,
-      agent: {
-        ...configSettings.agent,
-        think: {
-          ...configSettings.agent.think,
-          prompt: prompt
-        }
-      }
-    };
-    
-    setConfigSettings(newSettings);
-    
-    // Send updated settings to WebSocket if connected
-    if (connection) {
-      sendMessage(JSON.stringify(newSettings));
-    }
-  }, [configSettings, connection, sendMessage]);
+
 
   // Effects
 
@@ -572,7 +548,6 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       setModel: updateModel,
       setVoice: updateVoice,
       replayAudio,
-      updateSystemPrompt,
     }),
     [
       sendMessage,
@@ -589,7 +564,6 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       updateModel,
       updateVoice,
       replayAudio,
-      updateSystemPrompt,
     ]
   );
 
