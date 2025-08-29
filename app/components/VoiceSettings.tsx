@@ -46,11 +46,11 @@ export const VoiceSettings: React.FC = () => {
         </select>
       </div>
       {provider === "deepgram" ? (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <select
             value={dgVoice}
             onChange={(e) => setDgVoice(e.target.value)}
-            className="flex-1 bg-stone-800/70 border border-stone-600 text-stone-200 text-xs rounded px-2 py-1"
+            className="flex-1 min-w-0 bg-stone-800/70 border border-stone-600 text-stone-200 text-xs rounded px-2 py-1"
           >
             {DG_VOICES.map((v) => (
               <option key={v} value={v}>{v}</option>
@@ -58,22 +58,22 @@ export const VoiceSettings: React.FC = () => {
           </select>
           <button
             onClick={apply}
-            className="px-2 py-1 text-xs modern-button text-stone-900 rounded"
+            className="px-2 py-1 text-xs modern-button text-stone-900 rounded shrink-0"
           >
             Aplicar
           </button>
         </div>
       ) : (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full">
           <input
             placeholder="ElevenLabs Voice ID"
             value={elevenId}
             onChange={(e) => setElevenId(e.target.value)}
-            className="flex-1 bg-stone-800/70 border border-stone-600 text-stone-200 text-xs rounded px-2 py-1"
+            className="flex-1 min-w-0 bg-stone-800/70 border border-stone-600 text-stone-200 text-xs rounded px-2 py-1"
           />
           <button
             onClick={apply}
-            className="px-2 py-1 text-xs modern-button text-stone-900 rounded"
+            className="px-2 py-1 text-xs modern-button text-stone-900 rounded shrink-0"
           >
             Aplicar
           </button>
@@ -85,4 +85,3 @@ export const VoiceSettings: React.FC = () => {
     </div>
   );
 };
-

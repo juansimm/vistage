@@ -1,0 +1,12 @@
+{
+  "filename": "user_recording_20250829_141012.wav",
+  "uploadDate": "2025-08-29T14:10:27.384Z",
+  "processedDate": "2025-08-29T14:10:36.937Z",
+  "transcript": "Bueno, bienvenidos a esta nueva reunión número 45. Mi nombre es Juan, soy el presentador el día de hoy. Hoy vamos a trabajar un nuevo tema clave. Para tener una idea, hoy vamos a estar presentando lo que es a Joaquín, quien nos va a presentar su desafío, así que bueno, lo presento acá a mi compañero Joaquín. Perfecto. ¿Hay alguien que quiera hacer alguna pregunta? Perfecto. Bueno, gracias Luciana ahí por tus preguntas.",
+  "confidence": 0.9960794,
+  "metadata": {
+    "duration": 109.44,
+    "channels": 1,
+    "model": "deepgram-nova-2"
+  }
+}

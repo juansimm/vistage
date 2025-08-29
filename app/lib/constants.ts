@@ -169,15 +169,26 @@ export const DEFAULT_PROMPTS = {
   recomendaciones: "FASE VERDE - RECOMENDACIONES: Es momento de sintetizar. Después de escuchar todas las recomendaciones del grupo, proporciona una síntesis inteligente del caso y entrega 3-5 pasos accionables concretos. Tu recomendación debe ser la culminación de todo lo discutido, agregando valor estratégico único.",
 };
 
-// Industry presets and helpers
-export const INDUSTRIES = [
-  { id: 'general', name: 'General' },
-  { id: 'saas', name: 'SaaS / Tech' },
-  { id: 'manufacturing', name: 'Manufactura' },
-  { id: 'retail', name: 'Retail' },
-  { id: 'healthcare', name: 'Salud' },
-  { id: 'finance', name: 'Finanzas' },
-];
+/**
+ * Industry presets with emoji icons.
+ */
+export type Industry = {
+  id: string;
+  name: string;
+  icon: string;
+};
+
+/**
+ * List of supported industries for Vistage AI, each with an emoji icon.
+ */
+export const INDUSTRIES: readonly Industry[] = [
+  { id: 'general', name: 'General 🌐', icon: '🌐' },
+  { id: 'saas', name: 'SaaS / Tech 💻', icon: '💻' },
+  { id: 'manufacturing', name: 'Manufactura 🏭', icon: '🏭' },
+  { id: 'retail', name: 'Retail 🛒', icon: '🛒' },
+  { id: 'healthcare', name: 'Salud 🏥', icon: '🏥' },
+  { id: 'finance', name: 'Finanzas 💰', icon: '💰' },
+] as const;
 
 export const INDUSTRY_PROMPTS: Record<string, string> = {
   general: 'Mantén el enfoque estratégico transversal, aplica marcos clásicos (SWOT, 5 fuerzas, JTBD) cuando corresponda.',

@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "id": "conversation_live_20250829_123909",
+    "mode": "live",
+    "startedAt": "2025-08-29T12:38:57.619Z",
+    "endedAt": "2025-08-29T12:39:09.811Z",
+    "phase": "presentacion",
+    "durationSec": 12,
+    "language": "es",
+    "participants": [
+      "Usuario",
+      "Vistage AI"
+    ]
+  },
+  "messages": [
+    {
+      "id": "conversation_live_20250829_123909_msg_0",
+      "role": "user",
+      "text": "O sea, vos solo hablás,",
+      "ts": "2025-08-29T12:39:02.509Z"
+    },
+    {
+      "id": "conversation_live_20250829_123909_msg_1",
+      "role": "user",
+      "text": "y",
+      "ts": "2025-08-29T12:39:04.293Z"
+    },
+    {
+      "id": "conversation_live_20250829_123909_msg_2",
+      "role": "user",
+      "text": "solo hablás vos, ¿entendés? Tipo, no.",
+      "ts": "2025-08-29T12:39:06.478Z"
+    }
+  ]
+}
