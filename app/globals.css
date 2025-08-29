@@ -249,3 +249,40 @@ body {
 .chat-scroll::-webkit-scrollbar-corner {
   background: #1F2937;
 }
+
+/* Improved scrolling behavior */
+.chat-scroll {
+  scroll-behavior: smooth;
+  scroll-padding-bottom: 20px;
+}
+
+/* Prevent aggressive auto-scrolling */
+.chat-scroll.user-scrolling {
+  scroll-behavior: auto;
+}
+
+/* Scroll lock indicator styles */
+.scroll-lock-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: rgba(59, 130, 246, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

@@ -46,12 +46,14 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
     }
   };
 
+  // Much simpler scroll handling - just disable auto-scroll when user scrolls manually
   const handleScroll = () => {
     if (!scrollContainerRef.current) return;
     
     const container = scrollContainerRef.current;
-    const isAtBottom = Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 10;
+    const isAtBottom = Math.abs(container.scrollHeight - container.scrollTop - container.clientHeight) < 100;
     
+    // If user is not at bottom, disable auto-scroll
     if (!isAtBottom) {
       setIsUserScrolling(true);
       
@@ -60,11 +62,12 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
         clearTimeout(scrollTimeoutRef.current);
       }
       
-      // Set timeout to resume auto-scroll after 3 seconds of no scrolling
+      // Re-enable auto-scroll after 60 seconds (very long timeout)
       scrollTimeoutRef.current = setTimeout(() => {
         setIsUserScrolling(false);
-      }, 3000);
+      }, 60000);
     } else {
+      // User is at bottom - enable auto-scroll
       setIsUserScrolling(false);
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
@@ -72,18 +75,18 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
     }
   };
 
-  // Auto-scroll to bottom when new messages arrive
+  // Simple auto-scroll - only when not manually scrolling
   useEffect(() => {
     if (!isUserScrolling) {
       const timer = setTimeout(() => {
         scrollToBottom();
-      }, 100);
+      }, 1000); // Much longer delay to be less aggressive
       
       return () => clearTimeout(timer);
     }
   }, [messages.length, isUserScrolling]);
 
-  // Handle streaming text updates
+  // Handle streaming text updates - respect scroll lock
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
@@ -109,7 +112,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
               }));
               currentIndex++;
               
-              // Only scroll if user is not manually scrolling
+              // Only scroll if not manually scrolling
               if (!isUserScrolling) {
                 scrollToBottom();
               }
@@ -227,26 +230,41 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
       {/* Área de mensajes con scroll - flex-1 para ocupar el resto del espacio */}
       <div 
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto mt-4 p-4 chat-scroll" 
+        className={`flex-1 overflow-y-auto mt-4 p-4 chat-scroll ${isUserScrolling ? 'user-scrolling' : ''}`}
         onScroll={handleScroll}
         style={{ 
           scrollbarWidth: 'thin',
           scrollbarColor: '#57534e #1c1917'
         }}
       >
-        {/* Scroll to bottom button */}
-        {isUserScrolling && (
+        {/* Scroll to bottom button - always visible when there are messages */}
+        {messages.length > 0 && (
           <div className="fixed bottom-20 right-8 z-10">
             <button
               onClick={() => {
                 setIsUserScrolling(false);
                 scrollToBottom(true);
+                // Clear any pending timeouts
+                if (scrollTimeoutRef.current) {
+                  clearTimeout(scrollTimeoutRef.current);
+                }
               }}
-              className="p-3 bg-yellow-500 hover:bg-yellow-600 text-stone-900 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
-              title="Ir al final de la conversación"
+              className={`p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 ${
+                isUserScrolling 
+                  ? 'bg-yellow-500 hover:bg-yellow-600 text-stone-900' 
+                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+              }`}
+              title={isUserScrolling ? "Ir al final de la conversación" : "Ir al final"}
             >
               ⬇️
             </button>
+          </div>
+        )}
+        
+        {/* Scroll lock indicator */}
+        {isUserScrolling && (
+          <div className="scroll-lock-indicator">
+            🔒 Scroll bloqueado - Haz clic en ⬇️ para ir al final
           </div>
         )}
         {messages.length === 0 ? (
