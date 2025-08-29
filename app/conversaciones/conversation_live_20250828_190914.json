@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "id": "conversation_live_20250828_190914",
+    "mode": "live",
+    "startedAt": "2025-08-28T19:07:26.823Z",
+    "endedAt": "2025-08-28T19:09:14.694Z",
+    "phase": "presentacion",
+    "durationSec": 107,
+    "language": "es",
+    "participants": [
+      "Usuario",
+      "Vistage AI"
+    ]
+  },
+  "messages": [
+    {
+      "id": "conversation_live_20250828_190914_msg_0",
+      "role": "user",
+      "text": "Activás, hola hola, ¿cómo estás?",
+      "ts": "2025-08-28T19:09:14.696Z"
+    },
+    {
+      "id": "conversation_live_20250828_190914_msg_1",
+      "role": "assistant",
+      "text": "¡Hola! Estoy aquí y lista para ayudarte. ¿Cuál es el desafío o la situación que te gustaría explorar hoy?",
+      "ts": "2025-08-28T19:09:14.696Z",
+      "audio": {},
+      "voice": "aura-2-selena-es"
+    },
+    {
+      "id": "conversation_live_20250828_190914_msg_2",
+      "role": "user",
+      "text": "Hola, ¿cómo estás? Sí, mi nombre es Juan",
+      "ts": "2025-08-28T19:09:14.696Z"
+    },
+    {
+      "id": "conversation_live_20250828_190914_msg_3",
+      "role": "user",
+      "text": "y estoy teniendo unos problemas en la industria de medicina.",
+      "ts": "2025-08-28T19:09:14.696Z"
+    },
+    {
+      "id": "conversation_live_20250828_190914_msg_4",
+      "role": "user",
+      "text": "Tenemos muchos procesos que son manuales y la verdad me gustaría",
+      "ts": "2025-08-28T19:09:14.696Z"
+    },
+    {
+      "id": "conversation_live_20250828_190914_msg_5",
+      "role": "user",
+      "text": "eso.",
+      "ts": "2025-08-28T19:09:14.696Z"
+    },
+    {
+      "id": "conversation_live_20250828_190914_msg_6",
+      "role": "user",
+      "text": "Ahí ahí se está escuchando, ¿no?",
+      "ts": "2025-08-28T19:09:14.696Z"
+    },
+    {
+      "id": "conversation_live_20250828_190914_msg_7",
+      "role": "assistant",
+      "text": "Sí, te estoy escuchando claramente. Aprecio que compartas tus pensamientos. ¿Podrías proporcionarme un poco más de detalle sobre el impacto que tienen esos procesos manuales en tu organización? ¿Cómo está afectando esto a la eficiencia, la calidad de atención o cualquier otro aspecto crítico de tu operación?",
+      "ts": "2025-08-28T19:09:14.696Z",
+      "audio": {},
+      "voice": "aura-2-selena-es"
+    }
+  ]
+}

@@ -119,3 +119,101 @@ export const systemContent = `Eres "Bibi", una consultora ejecutiva de negocios 
 - Mantener el enfoque en los objetivos de la fase actual
 
 Recuerda: No eres solo una asistente de IA - eres una socia empresarial estratégica ayudando a ejecutivos a tomar mejores decisiones. Cada interacción debe acercarlos a la claridad, la perspicacia y los próximos pasos accionables.`;
+
+// Vistage AI Coaching Phases según PRD
+export const COACHING_PHASES = [
+  {
+    id: "presentacion",
+    name: "Presentación del Caso",
+    description: "El presentador expone su situación",
+    objective: "",
+    duration: 15,
+    color: "from-blue-500 to-blue-600",
+    bgColor: "bg-blue-500/20",
+    borderColor: "border-blue-500",
+    textColor: "text-blue-400",
+    icon: "📋",
+    phase: "azul"
+  },
+  {
+    id: "preguntas",
+    name: "Preguntas",
+    description: "Cada miembro hace su pregunta",
+    objective: "",
+    duration: 20,
+    color: "from-red-500 to-red-600",
+    bgColor: "bg-red-500/20",
+    borderColor: "border-red-500",
+    textColor: "text-red-400",
+    icon: "❓",
+    phase: "roja"
+  },
+  {
+    id: "recomendaciones",
+    name: "Recomendaciones",
+    description: "Cada miembro da su devolución",
+    objective: "",
+    duration: 15,
+    color: "from-green-500 to-green-600",
+    bgColor: "bg-green-500/20",
+    borderColor: "border-green-500",
+    textColor: "text-green-400",
+    icon: "✅",
+    phase: "verde"
+  }
+];
+
+export const DEFAULT_PROMPTS = {
+  presentacion: "FASE AZUL - PRESENTACIÓN DEL CASO: Eres Vivi, la IA de Vistage. En esta fase tu rol es ESCUCHAR ACTIVAMENTE. El presentador expone su caso y tu trabajo es comprender profundamente sin interrumpir ni dar soluciones. Haz preguntas aclaratorias ocasionales solo para comprender mejor el contexto. Tu objetivo: absorber toda la información para las siguientes fases.",
+  preguntas: "FASE ROJA - PREGUNTAS: Ahora es tu momento de hacer preguntas estratégicas. Basándote en todo lo escuchado en la presentación, formula preguntas poderosas que ayuden al grupo a explorar ángulos no considerados. Evita preguntas redundantes que ya se hayan hecho. Tu pregunta debe ser única, perspicaz y abrir nuevas líneas de pensamiento.",
+  recomendaciones: "FASE VERDE - RECOMENDACIONES: Es momento de sintetizar. Después de escuchar todas las recomendaciones del grupo, proporciona una síntesis inteligente del caso y entrega 3-5 pasos accionables concretos. Tu recomendación debe ser la culminación de todo lo discutido, agregando valor estratégico único.",
+};
+
+// Industry presets and helpers
+export const INDUSTRIES = [
+  { id: 'general', name: 'General' },
+  { id: 'saas', name: 'SaaS / Tech' },
+  { id: 'manufacturing', name: 'Manufactura' },
+  { id: 'retail', name: 'Retail' },
+  { id: 'healthcare', name: 'Salud' },
+  { id: 'finance', name: 'Finanzas' },
+];
+
+export const INDUSTRY_PROMPTS: Record<string, string> = {
+  general: 'Mantén el enfoque estratégico transversal, aplica marcos clásicos (SWOT, 5 fuerzas, JTBD) cuando corresponda.',
+  saas: 'Prioriza métricas SaaS (ARR, MRR, CAC, LTV, churn), ciclos de producto y GTM, uso de datos y activación.',
+  manufacturing: 'Considera supply chain, eficiencia operativa, lead time, calidad, seguridad, costos y CAPEX/OPEX.',
+  retail: 'Enfócate en unit economics, conversión, ticket promedio, rotación de inventario, omnicanalidad y experiencia de cliente.',
+  healthcare: 'Evalúa compliance, outcomes clínicos, experiencia de paciente, operaciones, payers/proveedores y ética.',
+  finance: 'Piensa en riesgo, cumplimiento, unit economics, regulación, gobernanza, liquidez y apetito de riesgo.',
+};
+
+export function buildSystemPrompt(params: {
+  phaseId?: string | null;
+  industryId?: string;
+  customPrompt?: string;
+} = {}) {
+  const { phaseId = null, industryId = 'general', customPrompt } = params;
+  const phaseName = phaseId
+    ? COACHING_PHASES.find((p) => p.id === phaseId)?.name || phaseId
+    : 'Sin Fase';
+
+  const base = systemContent.replace('{phase}', phaseName);
+  const phaseAddendum = phaseId ? (DEFAULT_PROMPTS as any)[phaseId] : '';
+  const industryAddendum = INDUSTRY_PROMPTS[industryId] || INDUSTRY_PROMPTS.general;
+  const custom = customPrompt ? `\n\nInstrucciones Personalizadas:\n${customPrompt}` : '';
+
+  return [
+    base,
+    '',
+    '---',
+    `Foco de Fase Actual: ${phaseName}`,
+    phaseAddendum,
+    '',
+    'Contexto de Industria:',
+    `- ${industryAddendum}`,
+    custom,
+  ]
+    .filter(Boolean)
+    .join('\n');
+}

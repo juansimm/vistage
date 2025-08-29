@@ -11,7 +11,7 @@ const AgentMessageHeader = ({
     return (
       <div className="flex items-center space-x-2 rtl:space-x-reverse">
         <span className="text-sm font-semibold text-white">Thalia</span>
-        <span className="text-xs font-normal text-gray-400">
+        <span className="text-xs font-normal text-stone-400">
           {moment().calendar()}
         </span>
       </div>

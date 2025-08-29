@@ -1,0 +1,159 @@
+import { ConversationFile, ConversationMeta, ConvMessage } from './types';
+
+export interface ConversationData {
+  id: string;
+  timestamp: string;
+  phase: string;
+  duration: number;
+  messages: Array<{
+    role: string;
+    content: string;
+    timestamp: string;
+    audio?: ArrayBuffer;
+    voice?: string;
+  }>;
+  sessionState: {
+    isActive: boolean;
+    currentPhase: string | null;
+    startTime: string | null;
+    endTime: string | null;
+    totalDuration: number;
+  };
+  metadata: {
+    llm: string;
+    voice: string;
+    version: string;
+  };
+}
+
+export const saveConversation = async (conversationData: ConversationData): Promise<void> => {
+  try {
+    // Solo guardar en el servidor - sin descarga local
+    const response = await fetch('/api/save-conversation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(conversationData),
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Conversación guardada exitosamente en servidor:', result.fileName);
+    } else {
+      const errorData = await response.json();
+      throw new Error(`Error del servidor: ${errorData.message || 'Error desconocido'}`);
+    }
+    
+  } catch (error) {
+    console.error('Error al guardar la conversación:', error);
+    throw error;
+  }
+};
+
+export const generateConversationId = (): string => {
+  return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+export const formatDuration = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+};
+
+// Nuevas funciones para el manejo de conversaciones
+export const listConversations = async (mode?: "live" | "useronly" | "all"): Promise<ConversationMeta[]> => {
+  try {
+    const queryParams = mode && mode !== "all" ? `?mode=${mode}` : "";
+    const response = await fetch(`/api/conversations/list${queryParams}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error del servidor: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error al listar conversaciones:', error);
+    throw error;
+  }
+};
+
+export const loadConversation = async (id: string): Promise<ConversationFile> => {
+  try {
+    const response = await fetch(`/api/conversations/load?id=${id}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error del servidor: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error al cargar conversación:', error);
+    throw error;
+  }
+};
+
+export const saveConversationWithMeta = async (
+  meta: ConversationMeta, 
+  messages: ConvMessage[]
+): Promise<void> => {
+  try {
+    const conversationFile: ConversationFile = { meta, messages };
+    const response = await fetch('/api/save-conversation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(conversationFile),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error del servidor: ${errorData.message || 'Error desconocido'}`);
+    }
+    
+    console.log('Conversación guardada exitosamente con metadatos');
+  } catch (error) {
+    console.error('Error al guardar la conversación con metadatos:', error);
+    throw error;
+  }
+};
+
+export const buildExecutiveSummary = (messages: ConvMessage[]): { bullets: string[], quotes: string[] } => {
+  // Resumen simple en el cliente - se puede mejorar con LLM en el futuro
+  const userMessages = messages.filter(m => m.role === "user");
+  const assistantMessages = messages.filter(m => m.role === "assistant");
+  
+  // Extraer temas clave de los mensajes del usuario
+  const userTopics = userMessages
+    .map(m => m.text.toLowerCase())
+    .join(' ')
+    .split(' ')
+    .filter(word => word.length > 4)
+    .reduce((acc: Record<string, number>, word) => {
+      acc[word] = (acc[word] || 0) + 1;
+      return acc;
+    }, {});
+  
+  const topTopics = Object.entries(userTopics)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 3)
+    .map(([word]) => word);
+  
+  const bullets = [
+    `Sesión de ${Math.round(messages.length * 0.5)} minutos con ${messages.length} intercambios`,
+    `Usuario expresó ${userMessages.length} puntos principales`,
+    `IA proporcionó ${assistantMessages.length} respuestas de coaching`,
+    `Temas principales: ${topTopics.join(', ')}`,
+    `Tipo de conversación: ${userMessages.length > assistantMessages.length ? 'Usuario dominante' : 'Conversación balanceada'}`,
+    `Último mensaje: ${messages[messages.length - 1]?.role === 'user' ? 'Usuario' : 'IA'}`
+  ];
+  
+  // Seleccionar citas más representativas
+  const quotes = messages
+    .filter(m => m.text.length > 30 && m.text.length < 200)
+    .slice(-5) // Últimos 5 mensajes más representativos
+    .map(m => m.text.substring(0, 120) + (m.text.length > 120 ? '...' : ''));
+  
+  return { bullets, quotes };
+};

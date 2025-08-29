@@ -26,9 +26,9 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://aura-tts-demo.deepgram.com"),
-  title: "Deepgram AI Agent",
-  description: `Deepgram's AI Agent Demo shows just how fast Speech-to-Text and Text-to-Speech can be.`,
+  metadataBase: new URL("https://vistage-ai.com"),
+  title: "Vistage AI - Coaching Ejecutivo Inteligente",
+  description: `Tu asistente de coaching ejecutivo inteligente`,
   robots: {
     index: false,
     follow: false,
@@ -41,9 +41,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="h-dvh">
+    <html lang="en">
       <body
-        className={`h-full dark ${classNames(
+        className={`dark ${classNames(
           favorit.variable,
           inter.className
         )}`}
@@ -54,12 +54,6 @@ export default function RootLayout({
           </AuthContextProvider>
         </ToastContextProvider>
         <GoogleTagManager gtmId="GTM-5R73N627" />
-        <Script
-          id="github-buttons"
-          async
-          defer
-          src="https://buttons.github.io/buttons.js"
-        ></Script>
         <Script id="heap-analytics">
           {`window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=document.createElement("script");r.type="text/javascript",r.async=!0,r.src="https://cdn.heapanalytics.com/js/heap-"+e+".js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(r,a);for(var n=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","removeEventProperty","setEventProperties","track","unsetEventProperty"],o=0;o<p.length;o++)heap[p[o]]=n(p[o])};`}
           {`heap.load("765739241");`}

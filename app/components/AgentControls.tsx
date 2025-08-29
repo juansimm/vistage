@@ -3,29 +3,18 @@ import { useCallback } from "react";
 import { MicrophoneIcon } from "./icons/MicrophoneIcon";
 import { useWebSocketContext } from "../context/WebSocketContext";
 
-export const AgentSettings = () => {
-  return (
-    <>
-      <div className="flex items-center gap-2.5 text-sm mr-4">
-        <span className="hidden md:inline-block text-white/50 font-inter">
-          LLM: <span className="text-white">Open AI gpt-4o-mini</span>
-        </span>
-        <span className="hidden md:inline-block text-white/50 font-inter">
-          Voice: <span className="text-white">Thalia</span>
-        </span>
-      </div>
-    </>
-  );
-};
-
 export const AgentControls = () => {
-  const { startStreaming, stopStreaming, microphoneOpen } =
-    useWebSocketContext();
+  const { 
+    startStreaming, 
+    stopStreaming, 
+    microphoneOpen
+  } = useWebSocketContext();
 
   const microphoneToggle = useCallback(
-    async (e: Event) => {
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
-      console.log("toogle the control");
+      e.stopPropagation();
+      console.log("toggle the control");
       if (!microphoneOpen) {
         startStreaming();
       } else {
@@ -38,40 +27,47 @@ export const AgentControls = () => {
   console.log("microphone control rendering");
 
   return (
-    <div className="relative">
-      <div className="absolute w-full -top-[4.5rem] py-4 flex justify-center">
-        <AgentSettings />
-      </div>
-      <div className="flex bg-[#101014] rounded-full justify-center">
-        <span
-          className={`rounded-full p-0.5 ${microphoneOpen
-            ? "bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-red-500"
-            : "bg-gradient-to-r bg-gradient to-[#13EF93]/50 from-[#149AFB]/80"
-            }`}
-        >
-          <Tooltip showArrow content="Toggle microphone on/off.">
-            <a
-              href="#"
-              onClick={(e: any) => microphoneToggle(e)}
-              className={`rounded-full w-16 md:w-20 sm:w-24 py-2 md:py-4 px-2 h-full sm:px-8 font-bold bg-[#101014] text-light-900 text-sm sm:text-base flex items-center justify-center group`}
+    <div className="flex flex-col items-center gap-6">
+      {/* Microphone Control - Primary Action */}
+      <div className="flex flex-col items-center gap-4">
+        <h4 className="text-sm font-medium text-stone-300 tracking-wide">Control de Micrófono</h4>
+        <div className="relative group">
+          <Tooltip showArrow content={microphoneOpen ? "Desactivar micrófono" : "Activar micrófono"}>
+            <button
+              onClick={microphoneToggle}
+              className={`microphone-button relative w-20 h-20 rounded-full flex items-center justify-center transition-all duration-500 ease-out transform hover:scale-110 hover:-translate-y-1 cursor-pointer ${
+                microphoneOpen
+                  ? "mic-inactive animate-pulse"
+                  : "mic-active animate-float"
+              } border border-stone-600/30`}
             >
-              {microphoneOpen && (
-                <div className="w-auto items-center justify-center hidden sm:flex absolute shrink-0">
-                  <MicrophoneIcon
-                    micOpen={microphoneOpen}
-                    className="h-5 md:h-6 animate-ping-infinite"
-                  />
-                </div>
-              )}
-              <div className="w-auto flex items-center justify-center shrink-0">
+              <div className="relative z-10 bg-stone-800/80 backdrop-blur-sm w-16 h-16 rounded-full flex items-center justify-center border border-stone-700/40">
                 <MicrophoneIcon
                   micOpen={microphoneOpen}
-                  className="h-5 md:h-6 "
+                  className={`h-7 w-7 transition-all duration-300 ${
+                    microphoneOpen ? 'text-red-400 drop-shadow-glowRed' : 'text-green-400 drop-shadow-glowGreen'
+                  }`}
                 />
               </div>
-            </a>
+            </button>
           </Tooltip>
-        </span>
+          {/* Ambient glow effect */}
+          <div className={`absolute inset-0 rounded-full transition-all duration-500 ${
+            microphoneOpen 
+              ? 'bg-red-500/20 animate-ping' 
+              : 'bg-green-500/10'
+          }`}></div>
+        </div>
+        <div className="text-center space-y-1">
+          <p className={`text-sm font-medium transition-colors duration-300 ${
+            microphoneOpen ? 'text-red-400' : 'text-green-400'
+          }`}>
+            {microphoneOpen ? "Grabando" : "Inactivo"}
+          </p>
+          <p className="text-xs text-stone-400 opacity-80">
+            {microphoneOpen ? "Clic para detener" : "Clic para comenzar"}
+          </p>
+        </div>
       </div>
     </div>
   );

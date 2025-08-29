@@ -1,0 +1,23 @@
+{
+  "meta": {
+    "id": "conversation_live_20250828_185037",
+    "mode": "live",
+    "startedAt": "2025-08-28T18:49:37.865Z",
+    "endedAt": "2025-08-28T18:50:37.814Z",
+    "phase": "presentacion",
+    "durationSec": 59,
+    "language": "es",
+    "participants": [
+      "Usuario",
+      "Vistage AI"
+    ]
+  },
+  "messages": [
+    {
+      "id": "conversation_live_20250828_185037_msg_0",
+      "role": "user",
+      "text": "Hola, hola,",
+      "ts": "2025-08-28T18:50:37.815Z"
+    }
+  ]
+}
