@@ -225,13 +225,18 @@ export const KnowledgeBase: React.FC = () => {
     if (!file.transcript?.text) return;
     try {
       setAnalyzingId(file.id);
-      const res = await fetch('/api/analyze-transcript', {
+      const res = await fetch('/api/personas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ transcript: file.transcript.text, utterances: file.transcript.metadata?.utterances || [] })
       });
       if (!res.ok) throw new Error('Analyze failed');
       const data = await res.json();
+      try {
+        // notify right sidebar listeners
+        // @ts-ignore
+        window.dispatchEvent(new CustomEvent('personaAnalysisReady', { detail: data.summary }));
+      } catch {}
       alert('Análisis completado: ' + JSON.stringify(data.summary, null, 2));
       // Optionally attach to file object
       setUploadedFiles(prev => prev.map(f => f.id === file.id ? { ...f, transcript: { ...f.transcript!, metadata: { ...f.transcript!.metadata, analysis: data.summary } } } : f));

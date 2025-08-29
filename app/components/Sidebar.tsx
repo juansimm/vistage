@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { PhaseSelector } from "./PhaseSelector";
 import { SessionControls } from "./SessionControls";
 import { PromptEditor } from "./PromptEditor";
@@ -40,6 +40,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onIndustryChange,
 }) => {
   const [activeTab, setActiveTab] = useState<SidebarTab>('session');
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const sidebarTabs = [
     {
@@ -145,7 +146,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }
 
   return (
-    <div className="w-80 border-r border-stone-700/30 bg-stone-800/60 backdrop-blur-md flex flex-col h-full">
+    <div className="w-80 border-r border-stone-700/30 bg-stone-800/60 backdrop-blur-md flex flex-col h-full min-h-0">
       {/* Header */}
       <div className="p-4 border-b border-stone-700/30 flex items-center justify-between glass">
         <h2 className="text-lg font-bold text-yellow-400 drop-shadow-glowYellow tracking-wide">Panel de Control</h2>
@@ -178,7 +179,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Tab Content */}
-      <div className="flex-1 overflow-y-auto p-4 bg-stone-800/20">
+      <div
+        ref={scrollRef}
+        onWheel={(e) => e.stopPropagation()}
+        className="flex-1 overflow-y-auto p-4 bg-stone-800/20 min-h-0 overscroll-contain"
+        style={{ scrollbarGutter: 'stable', overscrollBehavior: 'contain' }}
+      >
         {renderTabContent()}
       </div>
 

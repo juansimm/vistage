@@ -78,9 +78,8 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   const [currentSpeaker, setCurrentSpeaker] = useState<Speaker>(null);
   const [microphoneOpen, setMicrophoneOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [socketURL, setSocketUrl] = useState(
-    `${DEEPGRAM_SOCKET_URL}?t=${Date.now()}`
-  );
+  // Do not connect until apiKey is ready to avoid a flap
+  const [socketURL, setSocketUrl] = useState<string | null>(null);
   const [startTime, setStartTime] = useState(0);
   const [apiKey, setApiKey] = useState<string | null>(null);
   const [recordUserOnly, setRecordUserOnly] = useState(false);
@@ -153,10 +152,12 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
         console.log("Current API Key:", apiKey);
         console.log("Current Socket URL:", socketURL);
         stopPingInterval();
+        setConnection(false);
       },
       onClose: (event) => {
         console.log("WebSocket closed:", event.code, event.reason);
         stopPingInterval();
+        setConnection(false);
       },
       onMessage: handleWebSocketMessage,
       retryOnError: true,
@@ -376,10 +377,13 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
 
   // Utility functions
   const startPingInterval = useCallback(() => {
-    pingIntervalRef.current = setInterval(() => {
-      sendMessage(JSON.stringify({ type: "KeepAlive" }));
-    }, PING_INTERVAL);
-  }, [sendMessage]);
+    // Deepgram Agent does not expect arbitrary client pings/messages.
+    // KeepAlive disabled to avoid UNPARSABLE_CLIENT_MESSAGE errors.
+    if (pingIntervalRef.current) {
+      clearInterval(pingIntervalRef.current);
+      pingIntervalRef.current = null;
+    }
+  }, []);
 
   const stopPingInterval = useCallback(() => {
     if (pingIntervalRef.current) {
@@ -436,6 +440,8 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           const s = Math.max(-1, Math.min(1, inputData[i]));
           pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
+        // Do NOT send empty buffers — Deepgram will close the socket
+        if (pcmData.byteLength === 0) return;
         // Accumulate for user-only recording if enabled
         if (recordUserOnly && userRecording) {
           // Push a copy to avoid mutation
@@ -443,13 +449,18 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
         }
         // Only stream to agent if not in record-only mode
         if (!recordUserOnly) {
-          // console.debug("Sending audio chunk of length:", pcmData.length);
-          sendMessage(pcmData.buffer);
+          const ws = getWebSocket?.();
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            // console.debug("Sending audio chunk of length:", pcmData.length);
+            sendMessage(pcmData.buffer);
+          }
         }
       };
 
       microphone.connect(processor);
       processor.connect(audioContext.destination);
+
+      // Do not resend full Settings here; they are already applied on connect
     } catch (err) {
       console.error("Error accessing microphone:", err);
       if (audioContextRef.current) {
@@ -457,7 +468,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       }
       setMicrophoneOpen(false);
     }
-  }, [sendMessage, stopPingInterval]);
+  }, [sendMessage, stopPingInterval, getWebSocket]);
 
   const stopStreaming = useCallback(() => {
     if (processorRef.current) {
@@ -542,8 +553,7 @@ Directrices:
       customPrompt: opts.customPrompt,
     });
 
-    // Send runtime prompt update over the socket
-    sendMessage(JSON.stringify({ type: "Prompt", system: prompt }));
+    // Deepgram Agent: no enviar mensajes custom para actualizar el prompt en caliente
 
     // Update local config for next reconnects
     setConfigSettings(prev => ({
@@ -687,22 +697,17 @@ Directrices:
       ...configSettings,
       agent: {
         ...configSettings.agent,
-        think: {
-          ...configSettings.agent.think,
-          provider: {
-            type: provider,
-            model: modelName,
-          },
-        },
+        think: { ...configSettings.agent.think, provider: { type: provider, model: modelName } },
         speak: speakProvider,
       },
     };
 
     if (JSON.stringify(newSettings) !== JSON.stringify(configSettings)) {
       setConfigSettings(newSettings);
+      // Reconnect intentionally to apply new model/voice settings once
       setSocketUrl(`${DEEPGRAM_SOCKET_URL}?t=${Date.now()}`);
     }
-  }, [model, voice, configSettings]);
+  }, [model, voice]);
 
   useEffect(() => {
     return () => stopPingInterval();

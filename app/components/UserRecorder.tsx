@@ -15,15 +15,10 @@ export const UserRecorder: React.FC = () => {
   const stopAndSave = async () => {
     setSaving(true);
     try {
-      const blob = await stopUserOnlyRecording({ save: false });
-      if (!blob) return;
-      // Upload to server
       const ts = new Date().toISOString().replace(/[-:]/g, '').replace(/\..+/, '').replace('T', '_');
       const fname = `user_recording_${ts}.wav`;
-      const form = new FormData();
-      form.append('audio', blob, fname);
-      const resp = await fetch('/api/upload-audio', { method: 'POST', body: form });
-      if (!resp.ok) throw new Error('Upload failed');
+      const blob = await stopUserOnlyRecording({ save: true, filename: fname });
+      if (!blob) throw new Error('No se generó audio');
       alert('Grabación guardada como ' + fname);
     } catch (e: any) {
       alert('Error al guardar: ' + (e?.message || e));
@@ -69,4 +64,3 @@ export const UserRecorder: React.FC = () => {
     </div>
   );
 };
-

@@ -54,15 +54,6 @@ export const PhaseSelector: React.FC<PhaseSelectorProps> = ({
                 }`}>
                   {phase.name}
                 </h4>
-                <div className={`
-                  px-2 py-1 rounded-full text-xs font-medium transition-all duration-300
-                  ${currentPhase === phase.id 
-                    ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' 
-                    : 'bg-stone-700/50 text-stone-400'
-                  }
-                `}>
-                  {phase.duration} min
-                </div>
               </div>
               <p className={`text-xs leading-relaxed transition-colors duration-300 ${
                 currentPhase === phase.id ? 'text-stone-100' : 'text-stone-400'

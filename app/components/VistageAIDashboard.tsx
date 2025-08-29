@@ -5,9 +5,27 @@ import { LiveTranscription } from "./LiveTranscription";
 import { AgentControls } from "./AgentControls";
 import { CommandPalette } from "./CommandPalette";
 import { Sidebar } from "./Sidebar";
+import { RightSidebar } from "./RightSidebar";
 import { SessionState, CoachingPhase, ConversationMeta } from "../lib/types";
 import { COACHING_PHASES, DEFAULT_PROMPTS } from "../lib/constants";
 import { saveConversation, generateConversationId, ConversationData, loadConversation, buildExecutiveSummary } from "../lib/conversationStorage";
+
+// Define a stable layout component outside of the dashboard to avoid remounts
+const ShellLayout: React.FC<{
+  sidebar: React.ReactNode;
+  rightbar?: React.ReactNode;
+  showCommandPalette: boolean;
+  onClosePalette: () => void;
+  onInject: (conversation: ConversationMeta) => void;
+  children: React.ReactNode;
+}> = ({ sidebar, rightbar, showCommandPalette, onClosePalette, onInject, children }) => (
+  <div className="h-full bg-stone-900 text-white flex overflow-hidden">
+    {sidebar}
+    <div className="flex-1 flex flex-col min-w-0">{children}</div>
+    {rightbar}
+    <CommandPalette isOpen={showCommandPalette} onClose={onClosePalette} onInjectContext={onInject} />
+  </div>
+);
 
 export const VistageAIDashboard: React.FC = () => {
   const {
@@ -247,49 +265,39 @@ export const VistageAIDashboard: React.FC = () => {
     }
   }, [injectContext]);
 
-  // Layout principal con sidebar siempre visible
-  const MainLayout = ({ children }: { children: React.ReactNode }) => (
-    <div className="h-full bg-stone-900 text-white flex overflow-hidden">
-      {/* Sidebar */}
-      <Sidebar
-        currentPhase={currentPhase}
-        onPhaseChange={handlePhaseChange}
-        sessionState={sessionState}
-        onStartSession={handleStartSession}
-        onPauseSession={handlePauseSession}
-        onResumeSession={handleResumeSession}
-        onEndSession={handleEndSession}
-        onPromptUpdate={handlePromptUpdate}
-        isCollapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        industryId={industryId}
-        onIndustryChange={(id) => {
-          setIndustryId(id);
-          // update runtime prompt if a phase is selected
-          if (currentPhase) {
-            updateSystemPrompt({ phaseId: currentPhase, industryId: id, customPrompt: customPrompts[currentPhase] });
-          }
-        }}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {children}
-      </div>
-
-      {/* Command Palette */}
-      <CommandPalette
-        isOpen={showCommandPalette}
-        onClose={() => setShowCommandPalette(false)}
-        onInjectContext={handleInjectContextFromPalette}
-      />
-    </div>
+  // Build a stable Sidebar element (keeps its state across dashboard re-renders)
+  const sidebarEl = (
+    <Sidebar
+      currentPhase={currentPhase}
+      onPhaseChange={handlePhaseChange}
+      sessionState={sessionState}
+      onStartSession={handleStartSession}
+      onPauseSession={handlePauseSession}
+      onResumeSession={handleResumeSession}
+      onEndSession={handleEndSession}
+      onPromptUpdate={handlePromptUpdate}
+      isCollapsed={sidebarCollapsed}
+      onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      industryId={industryId}
+      onIndustryChange={(id) => {
+        setIndustryId(id);
+        if (currentPhase) {
+          updateSystemPrompt({ phaseId: currentPhase, industryId: id, customPrompt: customPrompts[currentPhase] });
+        }
+      }}
+    />
   );
 
   // Si no hay sesión activa, mostrar interfaz inicial
   if (!sessionState.isActive) {
     return (
-      <MainLayout>
+      <ShellLayout
+        sidebar={sidebarEl}
+        rightbar={<RightSidebar />}
+        showCommandPalette={showCommandPalette}
+        onClosePalette={() => setShowCommandPalette(false)}
+        onInject={handleInjectContextFromPalette}
+      >
         <div className="flex-1 flex items-center justify-center px-6 py-4 bg-stone-900">
           <div className="max-w-3xl w-full text-center">
             <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent mb-4">
@@ -342,13 +350,19 @@ export const VistageAIDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </MainLayout>
+      </ShellLayout>
     );
   }
 
   // Layout para sesión activa
   return (
-    <MainLayout>
+    <ShellLayout
+      sidebar={sidebarEl}
+      rightbar={<RightSidebar />}
+      showCommandPalette={showCommandPalette}
+      onClosePalette={() => setShowCommandPalette(false)}
+      onInject={handleInjectContextFromPalette}
+    >
       {/* Header compacto */}
       <div className="border-b border-stone-700 px-6 py-3 flex items-center justify-between bg-stone-800/50 backdrop-blur-sm">
         <div>
@@ -391,6 +405,6 @@ export const VistageAIDashboard: React.FC = () => {
           />
         </div>
       </div>
-    </MainLayout>
+    </ShellLayout>
   );
 };

@@ -232,9 +232,12 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
         ref={scrollContainerRef}
         className={`flex-1 overflow-y-auto mt-4 p-4 chat-scroll ${isUserScrolling ? 'user-scrolling' : ''}`}
         onScroll={handleScroll}
+        onWheel={(e) => e.stopPropagation()}
         style={{ 
           scrollbarWidth: 'thin',
-          scrollbarColor: '#57534e #1c1917'
+          scrollbarColor: '#57534e #1c1917',
+          overscrollBehavior: 'contain',
+          overflowAnchor: 'none' as any,
         }}
       >
         {/* Scroll to bottom button - always visible when there are messages */}
@@ -275,43 +278,7 @@ export const LiveTranscription: React.FC<LiveTranscriptionProps> = ({
             <p className="text-xs text-stone-500 mt-1">Mensajes recibidos: {messages.length}</p>
             <p className="text-xs text-stone-500 mt-1">Micrófono: {microphoneOpen ? 'Activo' : 'Inactivo'}</p>
             <p className="text-xs text-stone-500 mt-1">Speaker actual: {currentSpeaker || 'Ninguno'}</p>
-            {/* Test button for debugging */}
-            <button
-              onClick={() => {
-                const testMessage = {
-                  content: "Mensaje de prueba " + new Date().toLocaleTimeString(),
-                  role: "user",
-                  id: Date.now().toString(),
-                  timestamp: new Date().toISOString()
-                };
-                console.log("Adding test message:", testMessage);
-                // This will help us see if the message rendering works
-              }}
-              className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
-            >
-              Agregar Mensaje de Prueba
-            </button>
-            {/* Test message for debugging */}
-            <div className="mt-4 p-3 border-l-4 border-yellow-500 rounded-lg border border-stone-600">
-              <div className="flex items-start gap-3">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-sm font-medium bg-yellow-500 text-stone-900">
-                  T
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-medium text-yellow-400">
-                      Test
-                    </span>
-                    <span className="text-xs text-stone-500">
-                      {new Date().toLocaleTimeString()}
-                    </span>
-                  </div>
-                  <p className="text-white text-sm leading-relaxed">
-                    Este es un mensaje de prueba para verificar que el componente funciona correctamente.
-                  </p>
-                </div>
-              </div>
-            </div>
+            {/* Placeholder only — test UI removed */}
           </div>
         ) : (
           <div className="space-y-3">
