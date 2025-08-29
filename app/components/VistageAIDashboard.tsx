@@ -300,11 +300,8 @@ export const VistageAIDashboard: React.FC = () => {
       >
         <div className="flex-1 flex items-center justify-center px-6 py-4 bg-stone-900">
           <div className="max-w-3xl w-full text-center">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent mb-4">
-              Vistage AI Voice Session
-            </h1>
             <p className="text-stone-300 text-xl mb-12">
-              Tu asistente de coaching ejecutivo inteligente está listo
+              Tu asistente de coaching ejecutivo personalizado
             </p>
 
             {/* Quick Start */}

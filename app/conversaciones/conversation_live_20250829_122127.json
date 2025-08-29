@@ -1,0 +1,37 @@
+{
+  "meta": {
+    "id": "conversation_live_20250829_122127",
+    "mode": "live",
+    "startedAt": "2025-08-29T12:20:55.353Z",
+    "endedAt": "2025-08-29T12:21:27.414Z",
+    "phase": "presentacion",
+    "durationSec": 32,
+    "language": "es",
+    "participants": [
+      "Usuario",
+      "Vistage AI"
+    ]
+  },
+  "messages": [
+    {
+      "id": "conversation_live_20250829_122127_msg_0",
+      "role": "user",
+      "text": "Hola, hola.",
+      "ts": "2025-08-29T12:21:03.704Z"
+    },
+    {
+      "id": "conversation_live_20250829_122127_msg_1",
+      "role": "assistant",
+      "text": "¡Hola! Encantada de saludarte. Estoy aquí para ayudarte con cualquier desafío empresarial que estés enfrentando. ¿En qué puedo asistirte hoy?",
+      "ts": "2025-08-29T12:21:05.223Z",
+      "audio": {},
+      "voice": "elevenlabs:crQgCQuWgUucmYHEPsrB"
+    },
+    {
+      "id": "conversation_live_20250829_122127_msg_2",
+      "role": "user",
+      "text": "Hola, hola.",
+      "ts": "2025-08-29T12:21:21.574Z"
+    }
+  ]
+}

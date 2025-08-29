@@ -54,6 +54,8 @@ type WebSocketProviderProps = { children: ReactNode };
 const DEEPGRAM_SOCKET_URL = process.env
   .NEXT_PUBLIC_DEEPGRAM_SOCKET_URL as string;
 const PING_INTERVAL = 8000; // 8s
+// Expose ElevenLabs key for Agent endpoint headers (client build requires NEXT_PUBLIC_ prefix)
+const ELEVENLABS_API_KEY = (process.env.NEXT_PUBLIC_ELEVENLABS_API_KEY || process.env.ELEVENLABS_API_KEY) as string | undefined;
 
 // Context Creation
 const WebSocketContext = createContext<WebSocketContextValue | undefined>(
@@ -73,7 +75,7 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   const { token } = useAuth();
   // State
   const [connection, setConnection] = useState(false);
-  const [voice, setVoice] = useState("aura-2-selena-es");
+  const [voice, setVoice] = useState("elevenlabs:crQgCQuWgUucmYHEPsrB");
   const [model, setModel] = useState("open_ai+gpt-4o-mini");
   const [currentSpeaker, setCurrentSpeaker] = useState<Speaker>(null);
   const [microphoneOpen, setMicrophoneOpen] = useState(false);
@@ -122,8 +124,12 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       speak: {
         provider: {
           type: "eleven_labs",
-          voice_id: "crQgCQuWgUucmYHEPsrB",
+          model_id: "eleven_turbo_v2_5",
           //language_code: "es-ES"
+        },
+        endpoint: {
+          url: `wss://api.elevenlabs.io/v1/text-to-speech/${("" + (voice?.split(":")[1] || voice))}/stream-input`,
+          headers: { "xi-api-key": ELEVENLABS_API_KEY ?? "" }
         }
       }
     }
@@ -689,7 +695,13 @@ Directrices:
     let speakProvider: any;
     if (/^(elevenlabs:|11labs:|eleven:)/i.test(voice)) {
       const voiceId = voice.split(":")[1] || voice;
-      speakProvider = { provider: { type: "eleven_labs", voice_id: voiceId } };
+      speakProvider = {
+        provider: { type: "eleven_labs", model_id: "eleven_turbo_v2_5" },
+        endpoint: {
+          url: `wss://api.elevenlabs.io/v1/text-to-speech/${voiceId}/stream-input`,
+          headers: { "xi-api-key": ELEVENLABS_API_KEY ?? "" },
+        },
+      };
     } else {
       speakProvider = { provider: { type: "deepgram", model: voice } };
     }
