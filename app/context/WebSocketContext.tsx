@@ -121,8 +121,9 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
       },
       speak: {
         provider: {
-          type: "deepgram",
-          model: voice
+          type: "eleven_labs",
+          voice_id: "crQgCQuWgUucmYHEPsrB",
+          //language_code: "es-ES"
         }
       }
     }
@@ -688,7 +689,7 @@ Directrices:
     let speakProvider: any;
     if (/^(elevenlabs:|11labs:|eleven:)/i.test(voice)) {
       const voiceId = voice.split(":")[1] || voice;
-      speakProvider = { provider: { type: "elevenlabs", voice_id: voiceId } };
+      speakProvider = { provider: { type: "eleven_labs", voice_id: voiceId } };
     } else {
       speakProvider = { provider: { type: "deepgram", model: voice } };
     }
