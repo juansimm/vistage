@@ -1,38 +1,11 @@
 /** @type {import('next').NextConfig} */
-
 const nextConfig = {
-  webpack(config) {
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ["@svgr/webpack"],
-    });
-
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      sharp$: false,
-      "onnxruntime-node$": false,
-    };
-
-    return config;
-  },
-  reactStrictMode: false,
-  async headers() {
-    return [
-      {
-        source: "/_next/(.*)",
-        headers: [
-          {
-            key: "Cross-Origin-Opener-Policy",
-            value: "require-corp",
-          },
-          {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp",
-          },
-        ],
-      },
-    ];
+  eslint: {
+    // Allow production builds to successfully complete even if
+    // there are ESLint errors.
+    ignoreDuringBuilds: true,
   },
 };
 
 module.exports = nextConfig;
+

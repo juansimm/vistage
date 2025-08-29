@@ -12,7 +12,7 @@ import React, {
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { getToken } from "../lib/helpers";
 import { useAuth } from "./Auth";
-import { systemContent } from "../lib/constants";
+import { systemContent, buildSystemPrompt } from "../lib/constants";
 
 // Types and Interfaces
 type ChatMessage = {
@@ -42,6 +42,10 @@ interface WebSocketContextValue {
   setModel: (v: string) => void;
   replayAudio: (audioData: ArrayBuffer) => (() => void) | undefined;
   injectContext: (summary: { bullets: string[], quotes: string[] }, meta: any) => void;
+  updateSystemPrompt: (opts: { phaseId?: string | null; industryId?: string; customPrompt?: string }) => void;
+  // User-only recording helpers
+  startUserOnlyRecording: () => Promise<void>;
+  stopUserOnlyRecording: (opts?: { save?: boolean; filename?: string }) => Promise<Blob | null>;
 }
 
 type WebSocketProviderProps = { children: ReactNode };
@@ -79,6 +83,10 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
   );
   const [startTime, setStartTime] = useState(0);
   const [apiKey, setApiKey] = useState<string | null>(null);
+  const [recordUserOnly, setRecordUserOnly] = useState(false);
+  const [userRecording, setUserRecording] = useState(false);
+  const userRecordingBuffersRef = useRef<Int16Array[]>([]);
+  const recordingSampleRateRef = useRef<number>(16000);
   // Removed userTalkOnly functionality
 
   // Refs
@@ -428,8 +436,16 @@ export const WebSocketProvider = ({ children }: WebSocketProviderProps) => {
           const s = Math.max(-1, Math.min(1, inputData[i]));
           pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
         }
-        console.log("Sending audio chunk of length:", pcmData.length);
-        sendMessage(pcmData.buffer);
+        // Accumulate for user-only recording if enabled
+        if (recordUserOnly && userRecording) {
+          // Push a copy to avoid mutation
+          userRecordingBuffersRef.current.push(new Int16Array(pcmData));
+        }
+        // Only stream to agent if not in record-only mode
+        if (!recordUserOnly) {
+          // console.debug("Sending audio chunk of length:", pcmData.length);
+          sendMessage(pcmData.buffer);
+        }
       };
 
       microphone.connect(processor);
@@ -519,6 +535,109 @@ Directrices:
     }
   }, [sendMessage, getWebSocket]);
 
+  const updateSystemPrompt = useCallback((opts: { phaseId?: string | null; industryId?: string; customPrompt?: string }) => {
+    const prompt = buildSystemPrompt({
+      phaseId: opts.phaseId ?? null,
+      industryId: opts.industryId || 'general',
+      customPrompt: opts.customPrompt,
+    });
+
+    // Send runtime prompt update over the socket
+    sendMessage(JSON.stringify({ type: "Prompt", system: prompt }));
+
+    // Update local config for next reconnects
+    setConfigSettings(prev => ({
+      ...prev,
+      agent: {
+        ...prev.agent,
+        think: {
+          ...prev.agent.think,
+          prompt,
+        },
+      },
+    }));
+  }, [sendMessage]);
+
+  // Helpers to export PCM buffers to WAV
+  const exportWavBlob = useCallback((): Blob | null => {
+    const buffers = userRecordingBuffersRef.current;
+    if (!buffers.length) return null;
+    const sampleRate = recordingSampleRateRef.current || 16000;
+    const totalLength = buffers.reduce((acc, b) => acc + b.length, 0);
+    const pcm = new Int16Array(totalLength);
+    let offset = 0;
+    for (const b of buffers) {
+      pcm.set(b, offset);
+      offset += b.length;
+    }
+
+    const wavHeaderSize = 44;
+    const buffer = new ArrayBuffer(wavHeaderSize + pcm.length * 2);
+    const view = new DataView(buffer);
+
+    // RIFF chunk descriptor
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + pcm.length * 2, true);
+    writeString(view, 8, 'WAVE');
+    // fmt subchunk
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true); // Subchunk1Size (16 for PCM)
+    view.setUint16(20, 1, true);  // AudioFormat (1 = PCM)
+    view.setUint16(22, 1, true);  // NumChannels
+    view.setUint32(24, sampleRate, true); // SampleRate
+    view.setUint32(28, sampleRate * 2, true); // ByteRate (SampleRate * NumChannels * BitsPerSample/8)
+    view.setUint16(32, 2, true);  // BlockAlign (NumChannels * BitsPerSample/8)
+    view.setUint16(34, 16, true); // BitsPerSample
+    // data subchunk
+    writeString(view, 36, 'data');
+    view.setUint32(40, pcm.length * 2, true);
+
+    // PCM samples
+    let idx = 44;
+    for (let i = 0; i < pcm.length; i++, idx += 2) {
+      view.setInt16(idx, pcm[i], true);
+    }
+
+    return new Blob([view], { type: 'audio/wav' });
+
+    function writeString(dv: DataView, offset: number, str: string) {
+      for (let i = 0; i < str.length; i++) {
+        dv.setUint8(offset + i, str.charCodeAt(i));
+      }
+    }
+  }, []);
+
+  const startUserOnlyRecording = useCallback(async () => {
+    // Ensure mic is open; if not, start streaming (without sending)
+    if (!microphoneOpen) {
+      await startStreaming();
+    }
+    userRecordingBuffersRef.current = [];
+    recordingSampleRateRef.current = audioContextRef.current?.sampleRate || 16000;
+    setRecordUserOnly(true);
+    setUserRecording(true);
+  }, [microphoneOpen, startStreaming]);
+
+  const stopUserOnlyRecording = useCallback(async (opts?: { save?: boolean; filename?: string }): Promise<Blob | null> => {
+    setUserRecording(false);
+    setRecordUserOnly(false);
+    const wav = exportWavBlob();
+    userRecordingBuffersRef.current = [];
+    if (!wav) return null;
+
+    if (opts?.save) {
+      try {
+        const form = new FormData();
+        const fname = opts.filename || `user_recording_${Date.now()}.wav`;
+        form.append('audio', wav, fname);
+        await fetch('/api/upload-audio', { method: 'POST', body: form });
+      } catch (e) {
+        console.error('Failed to upload recording:', e);
+      }
+    }
+    return wav;
+  }, [exportWavBlob]);
+
 
 
   // Effects
@@ -555,6 +674,15 @@ Directrices:
 
   useEffect(() => {
     const [provider, modelName] = model.split("+");
+    // Detect speak provider by voice string (supports elevenlabs:VOICE_ID)
+    let speakProvider: any;
+    if (/^(elevenlabs:|11labs:|eleven:)/i.test(voice)) {
+      const voiceId = voice.split(":")[1] || voice;
+      speakProvider = { provider: { type: "elevenlabs", voice_id: voiceId } };
+    } else {
+      speakProvider = { provider: { type: "deepgram", model: voice } };
+    }
+
     const newSettings = {
       ...configSettings,
       agent: {
@@ -563,15 +691,10 @@ Directrices:
           ...configSettings.agent.think,
           provider: {
             type: provider,
-            model: modelName
+            model: modelName,
           },
         },
-        speak: {
-          provider: {
-            type: "deepgram",
-            model: voice
-          }
-        }
+        speak: speakProvider,
       },
     };
 
@@ -603,6 +726,9 @@ Directrices:
       setVoice: updateVoice,
       replayAudio,
       injectContext,
+      updateSystemPrompt,
+      startUserOnlyRecording,
+      stopUserOnlyRecording,
     }),
     [
       sendMessage,
@@ -620,6 +746,9 @@ Directrices:
       updateVoice,
       replayAudio,
       injectContext,
+      updateSystemPrompt,
+      startUserOnlyRecording,
+      stopUserOnlyRecording,
     ]
   );
 

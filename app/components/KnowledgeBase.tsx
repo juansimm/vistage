@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef } from "react";
+import { useWebSocketContext } from "../context/WebSocketContext";
 
 interface UploadedFile {
   id: string;
@@ -22,6 +23,8 @@ export const KnowledgeBase: React.FC = () => {
   const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
   const [playingFileId, setPlayingFileId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+  const { injectContext } = useWebSocketContext();
 
   const handleFileUpload = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -218,6 +221,49 @@ export const KnowledgeBase: React.FC = () => {
     }
   };
 
+  const analyzeTranscript = async (file: UploadedFile) => {
+    if (!file.transcript?.text) return;
+    try {
+      setAnalyzingId(file.id);
+      const res = await fetch('/api/analyze-transcript', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript: file.transcript.text, utterances: file.transcript.metadata?.utterances || [] })
+      });
+      if (!res.ok) throw new Error('Analyze failed');
+      const data = await res.json();
+      alert('Análisis completado: ' + JSON.stringify(data.summary, null, 2));
+      // Optionally attach to file object
+      setUploadedFiles(prev => prev.map(f => f.id === file.id ? { ...f, transcript: { ...f.transcript!, metadata: { ...f.transcript!.metadata, analysis: data.summary } } } : f));
+    } catch (e: any) {
+      alert('Error al analizar transcript: ' + (e?.message || e));
+    } finally {
+      setAnalyzingId(null);
+    }
+  };
+
+  const injectTranscriptAsContext = async (file: UploadedFile) => {
+    if (!file.transcript?.text) return;
+    const text = file.transcript.text;
+    // Simple summary: take first 4 sentences as bullets and 2 quotes
+    const sentences = text.split(/(?<=[\.\!\?])\s+/).filter(Boolean);
+    const bullets = sentences.slice(0, 4).map((s) => `- ${s.trim()}`);
+    const quotes = sentences.slice(4, 8).map((s) => s.trim()).slice(0, 2);
+    const summary = { bullets, quotes };
+    const meta = {
+      id: `kb_${file.id}`,
+      mode: 'useronly',
+      endedAt: new Date().toISOString(),
+      phase: 'descubrimiento',
+    } as any;
+    try {
+      await injectContext(summary, meta);
+      alert('Contexto inyectado en el agente.');
+    } catch (e: any) {
+      alert('Error al inyectar contexto: ' + (e?.message || e));
+    }
+  };
+
   return (
     <div>
       <h3 className="text-xl font-semibold text-white mb-4 text-center">
@@ -334,6 +380,25 @@ export const KnowledgeBase: React.FC = () => {
                       >
                         {file.isProcessing ? '🔄' : file.transcript ? '✅' : '🎙️'}
                       </button>
+                      {file.transcript?.text && (
+                        <button
+                          onClick={() => analyzeTranscript(file)}
+                          disabled={analyzingId === file.id}
+                          className={`p-1 text-xs rounded transition-colors ${analyzingId === file.id ? 'text-stone-500 cursor-not-allowed' : 'text-blue-400 hover:text-blue-300 hover:bg-blue-900/30'}`}
+                          title="Analizar transcript (identificar hablantes y temas)"
+                        >
+                          dY"?
+                        </button>
+                      )}
+                      {file.transcript?.text && (
+                        <button
+                          onClick={() => injectTranscriptAsContext(file)}
+                          className="p-1 text-xs rounded transition-colors text-purple-400 hover:text-purple-300 hover:bg-purple-900/30"
+                          title="Inyectar resumen al agente"
+                        >
+                          dY"s
+                        </button>
+                      )}
                     </div>
                   )}
                   

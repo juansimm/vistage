@@ -19,6 +19,8 @@ interface SidebarProps {
   onPromptUpdate: (prompt: string) => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  industryId: string;
+  onIndustryChange: (industryId: string) => void;
 }
 
 type SidebarTab = 'session' | 'phases' | 'prompts' | 'knowledge' | 'history';
@@ -33,7 +35,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onEndSession,
   onPromptUpdate,
   isCollapsed,
-  onToggleCollapse
+  onToggleCollapse,
+  industryId,
+  onIndustryChange,
 }) => {
   const [activeTab, setActiveTab] = useState<SidebarTab>('session');
 
@@ -100,6 +104,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             currentPhase={currentPhase}
             onPromptUpdate={onPromptUpdate}
             isSessionActive={sessionState.isActive}
+            industryId={industryId}
+            onIndustryChange={onIndustryChange}
           />
         );
       case 'knowledge':

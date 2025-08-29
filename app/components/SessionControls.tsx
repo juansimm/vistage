@@ -2,6 +2,8 @@
 import React, { useState } from "react";
 import { SessionState } from "../lib/types";
 import { AgentControls } from "./AgentControls";
+import { VoiceSettings } from "./VoiceSettings";
+import { UserRecorder } from "./UserRecorder";
 
 interface SessionControlsProps {
   sessionState: SessionState;
@@ -141,6 +143,16 @@ export const SessionControls: React.FC<SessionControlsProps> = ({
                   <AgentControls />
                 </div>
                 
+                {/* Voice settings */}
+                <div className="mt-2">
+                  <VoiceSettings />
+                </div>
+
+                {/* User-only recorder */}
+                <div className="mt-2">
+                  <UserRecorder />
+                </div>
+
                 <button
                   onClick={handleEndSession}
                   disabled={isSaving}

@@ -18,7 +18,8 @@ export const VistageAIDashboard: React.FC = () => {
     currentSpeaker,
     connection,
     sendMessage,
-    injectContext
+    injectContext,
+    updateSystemPrompt,
   } = useWebSocketContext();
 
   // State
@@ -32,6 +33,7 @@ export const VistageAIDashboard: React.FC = () => {
     totalDuration: 0
   });
   const [customPrompts, setCustomPrompts] = useState<Record<string, string>>({});
+  const [industryId, setIndustryId] = useState<string>('general');
   const [showInitialInterface, setShowInitialInterface] = useState(true);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
@@ -215,10 +217,10 @@ export const VistageAIDashboard: React.FC = () => {
 
   const handlePhaseChange = useCallback((phaseId: string) => {
     setCurrentPhase(phaseId);
-    
-    // Note: System prompt is now handled directly in the WebSocket context
-    // using the systemContent from constants
-  }, []);
+    try {
+      updateSystemPrompt({ phaseId, industryId, customPrompt: customPrompts[phaseId] });
+    } catch {}
+  }, [industryId, customPrompts, updateSystemPrompt]);
 
   const handlePromptUpdate = useCallback((prompt: string) => {
     if (!currentPhase) return;
@@ -227,7 +229,11 @@ export const VistageAIDashboard: React.FC = () => {
       ...prev,
       [currentPhase]: prompt
     }));
-  }, [currentPhase]);
+    // Apply immediately to the agent
+    try {
+      updateSystemPrompt({ phaseId: currentPhase, industryId, customPrompt: prompt });
+    } catch {}
+  }, [currentPhase, industryId, updateSystemPrompt]);
 
   const handleInjectContextFromPalette = useCallback(async (conversation: ConversationMeta) => {
     try {
@@ -256,6 +262,14 @@ export const VistageAIDashboard: React.FC = () => {
         onPromptUpdate={handlePromptUpdate}
         isCollapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        industryId={industryId}
+        onIndustryChange={(id) => {
+          setIndustryId(id);
+          // update runtime prompt if a phase is selected
+          if (currentPhase) {
+            updateSystemPrompt({ phaseId: currentPhase, industryId: id, customPrompt: customPrompts[currentPhase] });
+          }
+        }}
       />
 
       {/* Main Content */}
